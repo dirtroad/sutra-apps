@@ -1,0 +1,1362 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#667eea">
+<title>金刚般若波罗蜜经（注音注解版）</title>
+<style>
+/* 微信提示 */
+.weixin-tip{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);z-index:9999;color:white;text-align:center;padding:50px 20px}
+.weixin-tip.show{display:flex;flex-direction:column;justify-content:center;align-items:center}
+.weixin-tip h2{font-size:1.5em;margin-bottom:20px}
+.weixin-tip p{font-size:1em;opacity:0.9;margin-bottom:30px}
+.weixin-tip .arrow{font-size:3em;animation:bounce 1s infinite}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-20px)}}
+
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",sans-serif;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh;padding:10px}
+
+.container{max-width:900px;margin:0 auto;background:white;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,0.3);overflow:hidden}
+
+.header{background:linear-gradient(135deg,#f093fb 0%,#f5576c 100%);color:white;padding:20px 15px;text-align:center;position:sticky;top:0;z-index:100}
+.header h1{font-size:1.5em;margin-bottom:5px}
+.header p{opacity:0.95;font-size:0.85em}
+
+.progress-bar{background:rgba(255,255,255,0.3);border-radius:10px;height:6px;margin-top:10px;overflow:hidden}
+.progress-fill{background:white;height:100%;width:0%;transition:width 0.3s}
+
+.nav{display:flex;justify-content:space-around;padding:10px;background:#f8f9fa;border-bottom:1px solid #e9ecef;flex-wrap:wrap}
+.nav-btn{padding:8px 12px;border:none;background:#667eea;color:white;border-radius:8px;cursor:pointer;font-size:0.85em;transition:all 0.2s;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.nav-btn.active{background:#f5576c}
+.nav-btn:active{opacity:0.8;transform:scale(0.95)}
+
+/* 功能开关 */
+.settings{display:flex;gap:10px;padding:10px 15px;background:#f0f0f0;flex-wrap:wrap;align-items:center}
+.toggle-group{display:flex;align-items:center;gap:5px;font-size:0.85em}
+.toggle-switch{position:relative;width:44px;height:24px}
+.toggle-switch input{opacity:0;width:0;height:0}
+.toggle-slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:#ccc;transition:.3s;border-radius:24px}
+.toggle-slider:before{position:absolute;content:"";height:18px;width:18px;left:3px;bottom:3px;background:white;transition:.3s;border-radius:50%}
+input:checked + .toggle-slider{background:#4ade80}
+input:checked + .toggle-slider:before{transform:translateX(20px)}
+
+.content{padding:15px}
+
+/* 品目选择器 */
+.jingpin-selector{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-bottom:15px}
+.jingpin-btn{padding:10px 8px;border:2px solid #667eea;background:white;border-radius:8px;cursor:pointer;font-size:0.8em;text-align:left;transition:all 0.2s;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.jingpin-btn:active{background:#f0f0ff;transform:scale(0.98)}
+.jingpin-btn.selected{background:#fbbf24;border-color:#f59e0b;color:white}
+.jingpin-btn.completed{background:#4ade80;border-color:#4ade80;color:white}
+.jingpin-btn.today{background:#f5576c;border-color:#f5576c;color:white}
+.jingpin-btn .num{font-weight:bold;color:#667eea}
+.jingpin-btn.selected .num,.jingpin-btn.completed .num,.jingpin-btn.today .num{color:white}
+
+/* 经文显示 */
+.jingwen-container{background:#faf8f5;padding:20px 15px;border-radius:15px;display:none}
+.jingwen-container.active{display:block}
+.jingwen-title{text-align:center;margin-bottom:20px;color:#667eea;font-size:1.4em;border-bottom:2px solid #667eea;padding-bottom:10px}
+
+/* 拼音标注 */
+.jingwen-text{font-size:1.1em;line-height:2.4;color:#333}
+ruby{ruby-align:center}
+ruby rt{font-size:0.45em;color:#666;font-family:"Noto Sans SC",sans-serif;opacity:1;transition:opacity 0.3s}
+.hide-pinyin ruby rt{opacity:0;height:0;overflow:hidden}
+
+/* 播放高亮 */
+.playing-chunk{background:linear-gradient(transparent 60%,#bbf7d0 60%);transition:background 0.3s;border-radius:4px}
+.jingwen-text span{transition:background 0.3s}
+
+/* 播放高亮样式 */
+.playing-highlight{background:linear-gradient(135deg,#fef08a 0%,#fde047 100%);color:#1a1a1a;padding:2px 4px;border-radius:4px;box-shadow:0 2px 8px rgba(253,224,71,0.4);transition:all 0.3s ease;display:inline}
+.played-text{color:#9ca3af;opacity:0.7}
+
+/* 注解词汇 */
+.term{background:linear-gradient(transparent 60%,#fff3cd 60%);cursor:pointer;position:relative;transition:background 0.2s}
+.term:hover{background:linear-gradient(transparent 60%,#ffc107 60%)}
+.punct{margin:0 2px}
+
+/* 注解弹窗 */
+.note-popup{position:fixed;bottom:0;left:0;right:0;background:white;border-radius:20px 20px 0 0;box-shadow:0 -10px 40px rgba(0,0,0,0.2);padding:20px;transform:translateY(100%);transition:transform 0.3s;z-index:1000;max-height:60vh;overflow-y:auto}
+.note-popup.show{transform:translateY(0)}
+.note-popup-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}
+.note-popup-title{font-size:1.3em;color:#667eea;font-weight:bold}
+.note-popup-close{width:32px;height:32px;border:none;background:#f0f0f0;border-radius:50%;cursor:pointer;font-size:1.2em}
+.note-popup p{margin:10px 0;color:#666}
+.note-popup .pinyin-text{font-size:1.1em;color:#f5576c;font-weight:bold}
+.note-popup .note-text{line-height:1.8;font-size:1em;color:#333}
+
+/* 控制栏 - 悬浮固定在底部 */
+.control-bar{position:fixed;bottom:0;left:0;right:0;background:white;box-shadow:0 -4px 20px rgba(0,0,0,0.15);padding:12px 15px;z-index:100;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.control-btn{flex:1;min-width:60px;padding:12px 6px;border:none;border-radius:8px;cursor:pointer;font-size:0.85em;transition:all 0.2s;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.control-btn:active{transform:scale(0.95);box-shadow:0 2px 8px rgba(0,0,0,0.2)}
+.play-btn{background:linear-gradient(135deg,#4ade80 0%,#22c55e 100%);color:white}
+.pause-btn{background:linear-gradient(135deg,#fbbf24 0%,#f59e0b 100%);color:white}
+.stop-btn{background:linear-gradient(135deg,#ef4444 0%,#dc2626 100%);color:white}
+.speed-select{padding:8px 6px;border:2px solid #667eea;border-radius:8px;font-size:0.8em;background:white;max-width:70px}
+
+/* 给内容区留出底部空间 */
+.content{padding:15px;padding-bottom:100px}
+
+/* 统计 */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:15px}
+.stat-card{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;padding:12px 8px;border-radius:10px;text-align:center}
+.stat-number{font-size:1.5em;font-weight:bold}
+.stat-label{font-size:0.75em;opacity:0.9}
+
+/* 通知 */
+.notification{position:fixed;top:15px;right:15px;background:white;padding:12px 18px;border-radius:8px;box-shadow:0 10px 40px rgba(0,0,0,0.2);display:none;z-index:1001;border-left:5px solid #4ade80;max-width:300px}
+.notification.show{display:block;animation:slideIn 0.3s}
+@keyframes slideIn{from{transform:translateX(400px);opacity:0}to{transform:translateX(0);opacity:1}}
+
+/* 遮罩 */
+.overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.3);display:none;z-index:999}
+.overlay.show{display:block}
+
+@media(max-width:600px){
+  .stats{grid-template-columns:1fr}
+  .jingpin-selector{grid-template-columns:repeat(2,1fr)}
+  .settings{justify-content:center}
+  .nav-btn{padding:6px 10px;font-size:0.8em}
+}
+</style>
+</head>
+<body>
+<!-- 微信提示 -->
+<div class="weixin-tip" id="weixinTip">
+<h2>🙏 欢迎诵读金刚经</h2>
+<p style="line-height:1.8">如果语音无法播放<br>请点击右上角「...」→「在浏览器中打开」</p>
+<div class="arrow">👆</div>
+<button onclick="document.getElementById('weixinTip').classList.remove('show')" style="margin-top:30px;padding:12px 30px;background:#667eea;color:white;border:none;border-radius:8px;font-size:1em">开始诵读</button>
+</div>
+
+<div class="container">
+<div class="header">
+<h1>📿 金刚般若波罗蜜经</h1>
+<p>注音注解版 · 完整三十二分</p>
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+</div>
+
+<div class="nav">
+<button class="nav-btn active" data-tab="read">📖 诵读</button>
+<button class="nav-btn" data-tab="stats">📊 进度</button>
+<button class="nav-btn" data-tab="about">ℹ️ 说明</button>
+</div>
+
+<div class="settings">
+<div class="toggle-group">
+<label class="toggle-switch">
+<input type="checkbox" id="togglePinyin" checked>
+<span class="toggle-slider"></span>
+</label>
+<span>显示拼音</span>
+</div>
+<div class="toggle-group">
+<label class="toggle-switch">
+<input type="checkbox" id="toggleAnnotate" checked>
+<span class="toggle-slider"></span>
+</label>
+<span>注解高亮</span>
+</div>
+</div>
+
+<div class="content">
+<div id="readTab">
+<div class="control-bar">
+<button class="control-btn play-btn" id="playBtn">▶️ 播放</button>
+<button class="control-btn pause-btn" id="pauseBtn">⏸️ 暂停</button>
+<button class="control-btn stop-btn" id="stopBtn">⏹️ 停止</button>
+<select class="speed-select" id="speedSelect">
+<option value="0.7">0.7x 慢速</option>
+<option value="0.9">0.9x 稍慢</option>
+<option value="1" selected>1.0x 正常</option>
+<option value="1.2">1.2x 快速</option>
+<option value="1.5">1.5x 特快</option>
+</select>
+</div>
+
+<div style="margin-bottom:15px;padding:10px;background:#f8f9fa;border-radius:8px">
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:5px">
+<span style="font-size:0.85em;color:#666">📖 阅读进度</span>
+<span style="font-size:0.85em;color:#15803d" id="readPositionText">0%</span>
+</div>
+<input type="range" id="readPositionSlider" min="0" max="100" value="0" style="width:100%;cursor:pointer">
+<div style="display:flex;justify-content:space-between;font-size:0.75em;color:#999;margin-top:5px">
+<span>开头</span>
+<span>拖动跳转</span>
+<span>结尾</span>
+</div>
+</div>
+
+<div class="stats" style="margin-bottom:15px">
+<div class="stat-card" style="background:linear-gradient(135deg,#22c55e 0%,#16a34a 100%)"><div class="stat-number" id="totalReadsMain">0</div><div class="stat-label">累计诵读遍数</div></div>
+</div>
+
+<h2 style="margin-bottom:12px;color:#333;font-size:1.1em;">选择品目（全32分）</h2>
+<div class="jingpin-selector" id="jingpinSelector"></div>
+
+<div class="jingwen-container" id="jingwenContainer">
+<h3 class="jingwen-title" id="currentJingpin"></h3>
+<div id="jingwenContent"></div>
+</div>
+</div>
+
+<div id="statsTab" style="display:none">
+<h2 style="margin-bottom:15px;color:#333;font-size:1.2em;">诵读统计</h2>
+<div class="stats">
+<div class="stat-card"><div class="stat-number" id="totalDays">0</div><div class="stat-label">累计天数</div></div>
+<div class="stat-card"><div class="stat-number" id="completedJingpins">0/32</div><div class="stat-label">已完成分</div></div>
+<div class="stat-card"><div class="stat-number" id="currentStreak">0</div><div class="stat-label">连续天数</div></div>
+</div>
+<div class="stats" style="margin-top:10px">
+<div class="stat-card" style="background:linear-gradient(135deg,#22c55e 0%,#16a34a 100%)"><div class="stat-number" id="totalReads">0</div><div class="stat-label">累计诵读遍数</div></div>
+</div>
+<div style="margin-top:20px;padding:15px;background:#f8f9fa;border-radius:10px">
+<h3 style="margin-bottom:10px;color:#667eea">💡 修行提示</h3>
+<p style="color:#666;font-size:0.9em;line-height:1.8">每日持诵金刚经，可消除业障、增长福慧。建议每日至少诵读一品，持之以恒，必获感应。点击经文中的<span style="background:linear-gradient(transparent 60%,#ffc107 60%)">黄色词汇</span>可查看注解。</p>
+</div>
+</div>
+
+<div id="aboutTab" style="display:none">
+<h2 style="margin-bottom:15px;color:#333;font-size:1.2em;">使用说明</h2>
+<div style="padding:15px;background:#f8f9fa;border-radius:10px;line-height:1.8">
+<p><strong>📖 功能特点</strong></p>
+<ul style="margin:10px 0 15px 20px;color:#666">
+<li>完整收录金刚经三十二分全文</li>
+<li>拼音标注：可开关显示，辅助正音</li>
+<li>佛教名词注解：点击黄色词汇查看解释</li>
+<li>语音朗读：支持调节语速</li>
+<li>进度记录：自动保存诵读进度</li>
+</ul>
+<p><strong>🙏 功德利益</strong></p>
+<p style="color:#666;margin-top:8px">《金刚经》云：闻是菩萨名字，或赞叹，或瞻礼，或称名，或供养，是人当得百返生于三十三天，永不堕恶道。</p>
+</div>
+</div>
+</div>
+</div>
+
+<div class="notification" id="notification"></div>
+<div class="overlay" id="overlay" onclick="closeNotePopup()"></div>
+<div class="note-popup" id="notePopup">
+<div class="note-popup-header">
+<span class="note-popup-title" id="notePopupTitle">词汇</span>
+<button class="note-popup-close" onclick="closeNotePopup()">✕</button>
+</div>
+<p><span class="pinyin-text" id="notePopupPinyin"></span></p>
+<p class="note-text" id="notePopupNote"></p>
+</div>
+
+<script>
+// 金刚经完整版 - 带拼音和注解
+// 多音字语音替换表（用于TTS正确发音）
+const ttsReplacements = {
+    "地藏": "地葬",  // zàng
+    "地藏王": "地葬王",
+    "地藏菩萨": "地葬菩萨",
+    "宝藏": "宝藏",  // 保持不变，这里读 zàng
+    "三藏": "三葬",  // zàng
+    "般若": "波惹",  // bō rě
+    "阿耨多罗": "阿耨多罗",  // 保持
+    "南无": "南摩",  // nā mó
+    "伽蓝": "伽蓝",  // qié lán
+    "摩诃": "摩诃",  // 保持
+    "阎浮提": "阎浮提",  // 保持
+    "阿僧祇": "阿僧祇",  // 保持
+};
+
+// 处理多音字（用于语音合成）
+function processTextForTTS(text) {
+    let result = text;
+    for (const [original, replacement] of Object.entries(ttsReplacements)) {
+        if (original !== replacement) {
+            result = result.split(original).join(replacement);
+        }
+    }
+    return result;
+}
+
+// 佛教术语注解库
+const annotations = {
+    "忉利天": { pinyin: "dāo lì tiān", note: "三十三天，欲界第二天，帝释天所居之处" },
+    "释迦牟尼": { pinyin: "shì jiā móu ní", note: "佛教创始人，本名乔达摩·悉达多" },
+    "文殊师利": { pinyin: "wén shū shī lì", note: "文殊菩萨，智慧第一，常侍佛陀左侧" },
+    "地藏菩萨": { pinyin: "dì zàng pú sà", note: "大愿菩萨，发愿'地狱不空，誓不成佛'" },
+    "摩诃萨": { pinyin: "mó hē sà", note: "大士，菩萨的尊称，意为大心众生" },
+    "五浊恶世": { pinyin: "wǔ zhuó è shì", note: "劫浊、见浊、烦恼浊、众生浊、命浊" },
+    "波罗蜜": { pinyin: "bō luó mì", note: "度，到彼岸，指菩萨修行的六度万行" },
+    "般若": { pinyin: "bō rě", note: "智慧，通达真理的最高智慧" },
+    "三昧": { pinyin: "sān mèi", note: "正定，心专注一境的禅定状态" },
+    "娑婆世界": { pinyin: "suō pó shì jiè", note: "堪忍世界，我们所在的这个苦难世界" },
+    "天龙八部": { pinyin: "tiān lóng bā bù", note: "天、龙、夜叉、乾闼婆、阿修罗、迦楼罗、紧那罗、摩睺罗伽" },
+    "阿僧祇": { pinyin: "ā sēng qí", note: "无数，印度极大的数量单位" },
+    "那由他": { pinyin: "nuó yóu tā", note: "亿，印度数量单位，千万或亿" },
+    "恒河沙": { pinyin: "héng hé shā", note: "极多，如恒河之沙，数不胜数" },
+    "劫": { pinyin: "jié", note: "劫波，极长的时间单位，世界成坏一次为一劫" },
+    "菩提": { pinyin: "pú tí", note: "觉悟，无上正等正觉" },
+    "涅槃": { pinyin: "niè pán", note: "寂灭，烦恼断尽、超越生死的境界" },
+    "阿耨多罗三藐三菩提": { pinyin: "ā nòu duō luó sān miǎo sān pú tí", note: "无上正等正觉，佛的圆满觉悟" },
+    "婆罗门": { pinyin: "pó luó mén", note: "印度四种姓之首，祭司阶层" },
+    "无间地狱": { pinyin: "wú jiàn dì yù", note: "阿鼻地狱，最痛苦的地狱，受苦无间断" },
+    "铁围山": { pinyin: "tiě wéi shān", note: "围绕世界的铁山，地狱所在" },
+    "夜叉": { pinyin: "yè chā", note: "勇健鬼，或为护法，或为恶鬼" },
+    "阎浮提": { pinyin: "yán fú tí", note: "南赡部洲，人类居住的大洲" },
+    "三宝": { pinyin: "sān bǎo", note: "佛宝、法宝、僧宝，佛教皈依对象" },
+    "沙门": { pinyin: "shā mén", note: "出家人，修行者" },
+    "优婆塞": { pinyin: "yōu pó sāi", note: "在家男居士，受三皈五戒的男信徒" },
+    "优婆夷": { pinyin: "yōu pó yí", note: "在家女居士，受三皈五戒的女信徒" },
+    "比丘": { pinyin: "bǐ qiū", note: "出家受具足戒的男僧" },
+    "比丘尼": { pinyin: "bǐ qiū ní", note: "出家受具足戒的女僧" },
+    "辟支佛": { pinyin: "pì zhī fó", note: "缘觉，无师自悟的圣者" },
+    "声闻": { pinyin: "shēng wén", note: "听闻佛法而悟道的弟子" },
+    "罗汉": { pinyin: "luó hàn", note: "阿罗汉，断尽烦恼的圣者" },
+    "转轮王": { pinyin: "zhuǎn lún wáng", note: "统一天下的圣王，以正法治国" },
+    "梵王": { pinyin: "fàn wáng", note: "大梵天王，初禅天之主" },
+    "帝释": { pinyin: "dì shì", note: "帝释天，忉利天之主，护法神" },
+    "六道": { pinyin: "liù dào", note: "天、人、阿修罗、畜生、饿鬼、地狱" },
+    "三恶道": { pinyin: "sān è dào", note: "畜生、饿鬼、地狱，痛苦最深的三个去处" },
+    "业": { pinyin: "yè", note: "行为、造作，善恶行为产生的果报力量" },
+    "因果": { pinyin: "yīn guǒ", note: "因缘果报，善因善果，恶因恶果" },
+    "功德": { pinyin: "gōng dé", note: "善行所积累的福德与智慧" },
+    "供养": { pinyin: "gōng yǎng", note: "以香花饮食等敬奉三宝" },
+    "瞻礼": { pinyin: "zhān lǐ", note: "瞻仰礼拜，恭敬对待" },
+    "回向": { pinyin: "huí xiàng", note: "将功德转向众生或特定目标" },
+    "像法": { pinyin: "xiàng fǎ", note: "佛灭度后，佛法逐渐衰微的时期" },
+    "末法": { pinyin: "mò fǎ", note: "佛法衰微的最后时期" },
+    "如来": { pinyin: "rú lái", note: "佛的十号之一，乘如实道而来" },
+    "世尊": { pinyin: "shì zūn", note: "佛陀的尊称，世间最尊贵者" },
+    "善男子善女人": { pinyin: "shàn nán zǐ shàn nǚ rén", note: "信仰佛法、行善积德的男女" },
+    "摩顶": { pinyin: "mó dǐng", note: "佛以手摩弟子顶，表示授记或加持" },
+    "授记": { pinyin: "shòu jì", note: "佛预言弟子未来成佛" },
+    "十地": { pinyin: "shí dì", note: "菩萨修行的十个阶段，欢喜地至法云地" },
+    "五戒": { pinyin: "wǔ jiè", note: "不杀生、不偷盗、不邪淫、不妄语、不饮酒" },
+    "十善": { pinyin: "shí shàn", note: "不杀、不盗、不淫、不妄、不酒、不两舌、不恶口、不绮语、不贪、不瞋、不痴" },
+    "伽蓝": { pinyin: "qié lán", note: "寺院，僧伽蓝摩的简称" },
+    "常住": { pinyin: "cháng zhù", note: "寺院公物，属僧团共有的财产" },
+    "精进": { pinyin: "jīng jìn", note: "努力修行，不懈怠" },
+    "慈悲": { pinyin: "cí bēi", note: "予乐为慈，拔苦为悲" },
+    "方便": { pinyin: "fāng biàn", note: "善巧方法，适应众生根机的教化手段" },
+    "神通": { pinyin: "shén tōng", note: "超常能力，天眼、天耳、他心、宿命、神足、漏尽" },
+    "化身": { pinyin: "huà shēn", note: "佛菩萨为度众生而变化的各种身形" },
+    "弥勒": { pinyin: "mí lè", note: "未来佛，现居兜率天，将降生人间成佛" },
+    "观世音": { pinyin: "guān shì yīn", note: "观音菩萨，大慈大悲，闻声救苦" },
+    "普贤": { pinyin: "pǔ xián", note: "普贤菩萨，行愿第一" },
+    "虚空藏": { pinyin: "xū kōng zàng", note: "虚空藏菩萨，智慧如虚空广大" }
+};
+
+// 单字拼音库（常用字）
+const charPinyinFull = {
+    // 常用单字
+    "如":"rú","是":"shì","我":"wǒ","闻":"wén","一":"yī","时":"shí","佛":"fó","在":"zài",
+    "忉":"dāo","利":"lì","天":"tiān","为":"wèi","母":"mǔ","说":"shuō","法":"fǎ","尔":"ěr",
+    "十":"shí","方":"fāng","无":"wú","量":"liàng","世":"shì","界":"jiè","不":"bù","可":"kě",
+    "诸":"zhū","及":"jí","大":"dà","菩":"pú","萨":"sà","摩":"mó","诃":"hē","皆":"jiē",
+    "来":"lái","集":"jí","会":"huì","赞":"zàn","叹":"tàn","释":"shì","迦":"jiā","牟":"móu",
+    "尼":"ní","能":"néng","于":"yú","五":"wǔ","浊":"zhuó","恶":"è","现":"xiàn","思":"sī",
+    "议":"yì","智":"zhì","慧":"huì","神":"shén","通":"tōng","之":"zhī","力":"lì","调":"tiáo",
+    "伏":"fú","刚":"gāng","强":"qiáng","众":"zhòng","生":"shēng","知":"zhī","苦":"kǔ","乐":"lè",
+    "各":"gè","遣":"qiǎn","侍":"shì","者":"zhě","问":"wèn","讯":"xùn","尊":"zūn","放":"fàng",
+    "光":"guāng","明":"míng","云":"yún","所":"suǒ","谓":"wèi","圆":"yuán","满":"mǎn","慈":"cí",
+    "悲":"bēi","吉":"jí","祥":"xiáng","福":"fú","德":"dé","归":"guī","依":"yī","又":"yòu",
+    "出":"chū","种":"zhǒng","微":"wēi","妙":"miào","音":"yīn","尸":"shī","羼":"chàn","提":"tí",
+    "毗":"pí","离":"lí","耶":"yē","禅":"chán","若":"rě","喜":"xǐ","舍":"shě","解":"jiě",
+    "脱":"tuō","漏":"lòu","吼":"hǒu","雷":"léi","已":"yǐ","他":"tā","土":"tǔ","有":"yǒu",
+    "亿":"yì","龙":"lóng","鬼":"guǐ","亦":"yì","宫":"gōng","告":"gào","文":"wén","殊":"shū",
+    "师":"shī","王":"wáng","子":"zǐ","汝":"rǔ","观":"guān","切":"qiè","此":"cǐ","国":"guó",
+    "到":"dào","数":"shù","白":"bái","言":"yán","若":"ruò","以":"yǐ","眼":"yǎn","故":"gù",
+    "犹":"yóu","尽":"jìn","藏":"zàng","久":"jiǔ","远":"yuǎn","劫":"jié","度":"dù","当":"dāng",
+    "未":"wèi","成":"chéng","就":"jiù","过":"guò","去":"qù","修":"xiū","善":"shàn","根":"gēn",
+    "证":"zhèng","碍":"ài","即":"jí","信":"xìn","受":"shòu","小":"xiǎo","果":"guǒ","声":"shēng",
+    "八":"bā","部":"bù","虽":"suī","实":"shí","语":"yǔ","必":"bì","怀":"huái","惑":"huò",
+    "设":"shè","使":"shǐ","顶":"dǐng","免":"miǎn","兴":"xīng","谤":"bàng","愿":"yuàn",
+    "广":"guǎng","作":"zuò","行":"xíng","立":"lì","而":"ér","事":"shì","譬":"pì","如":"rú",
+    "千":"qiān","草":"cǎo","木":"mù","丛":"cóng","林":"lín","稻":"dào","麻":"má","竹":"zhú",
+    "苇":"wěi","山":"shān","石":"shí","微":"wēi","尘":"chén","物":"wù","恒":"héng","河":"hé",
+    "沙":"shā","内":"nèi","积":"jī","充":"chōng","位":"wèi","倍":"bèi","多":"duō","上":"shàng",
+    "喻":"yù","况":"kuàng","在":"zài","辟":"pì","支":"zhī","威":"wēi","誓":"shì","奇":"qí",
+    "男":"nán","女":"nǚ","名":"míng","或":"huò","瞻":"zhān","礼":"lǐ","称":"chēng","供":"gōng",
+    "养":"yǎng","乃":"nǎi","彩":"cǎi","画":"huà","刻":"kè","镂":"lòu","塑":"sù","漆":"qī",
+    "形":"xíng","像":"xiàng","人":"rén","得":"dé","百":"bǎi","返":"fǎn","三":"sān","十":"shí",
+    "永":"yǒng","堕":"duò","道":"dào","身":"shēn","长":"zhǎng","子":"zǐ","号":"hào","奋":"fèn",
+    "迅":"xùn","具":"jù","足":"zú","万":"wàn","见":"jiàn","相":"xiàng","好":"hǎo","福":"fú",
+    "庄":"zhuāng","严":"yán","因":"yīn","彼":"bǐ","欲":"yù","须":"xū","脱":"tuō","受":"shòu",
+    "令":"lìng","发":"fā","今":"jīn","际":"jì","计":"jì","罪":"zuì","六":"liù","设":"shè",
+    "方":"fāng","便":"biàn","自":"zì","成":"chéng","以":"yǐ","前":"qián","尚":"shàng",
+    "觉":"jué","华":"huā","定":"dìng","寿":"shòu","命":"mìng","四":"sì","像":"xiàng",
+    "婆":"pó","罗":"luó","门":"mén","宿":"sù","深":"shēn","钦":"qīn","敬":"jìng","坐":"zuò",
+    "卧":"wò","卫":"wèi","护":"hù","母":"mǔ","邪":"xié","轻":"qīng","圣":"shèng","诱":"yòu",
+    "正":"zhèng","全":"quán","魂":"hún","神":"shén","狱":"yù","计":"jì","随":"suí","业":"yè",
+    "趣":"qù","遂":"suì","卖":"mài","宅":"zhái","求":"qiú","香":"xiāng","具":"jù","塔":"tǎ",
+    "寺":"sì","兴":"xīng","威":"wēi","容":"róng","端":"duān","毕":"bì","备":"bèi","仰":"yǎng",
+    "私":"sī","念":"niàn","大":"dà","傥":"tǎng","垂":"chuí","泣":"qì","良":"liáng","恋":"liàn",
+    "忽":"hū","空":"kōng","声":"shēng","勿":"wù","悲":"bēi","处":"chù","合":"hé","掌":"zhǎng",
+    "宽":"kuān","忧":"yōu","昼":"zhòu","夜":"yè","忆":"yì","界":"jiè","再":"zài","报":"bào",
+    "举":"jǔ","扑":"pū","支":"zhī","节":"jié","损":"sǔn","左":"zuǒ","右":"yòu","扶":"fú",
+    "持":"chí","苏":"sū","慈":"cí","悯":"mǐn","速":"sù","将":"jiāng","死":"sǐ","返":"fǎn",
+    "舍":"shè","端":"duān","思":"sī","惟":"wéi","日":"rì","海":"hǎi","水":"shuǐ","涌":"yǒng",
+    "沸":"fèi","兽":"shòu","铁":"tiě","飞":"fēi","走":"zǒu","东":"dōng","西":"xī","驰":"chí",
+    "逐":"zhú","取":"qǔ","食":"shí","噉":"dàn","形":"xíng","异":"yì","多":"duō","手":"shǒu",
+    "足":"zú","头":"tóu","口":"kǒu","牙":"yá","外":"wài","刃":"rèn","剑":"jiàn","驱":"qū",
+    "近":"jìn","搏":"bó","攫":"jué","类":"lèi","敢":"gǎn","久":"jiǔ","视":"shì","毒":"dú",
+    "王":"wáng","稽":"qǐ","首":"shǒu","迎":"yíng","善":"shàn","缘":"yuán","答":"dá","围":"wéi",
+    "西":"xī","面":"miàn","重":"chóng","中":"zhōng","实":"shí","云":"yún","何":"hé","非":"fēi",
+    "涌":"yǒng","沸":"fèi","新":"xīn","继":"jì","嗣":"sì","拔":"bá","难":"nàn","据":"jù",
+    "本":"běn","感":"gǎn","然":"rán","由":"yóu","旬":"xún","招":"zhāo","共":"gòng","处":"chù",
+    "百":"bǎi","别":"bié","者":"zhě","氏":"shì","姓":"xìng","等":"děng","启":"qǐ","却":"què",
+    "忆":"yì","承":"chéng","孝":"xiào","顺":"shùn","设":"shè","福":"fú","布":"bù","施":"shī",
+    "唯":"wéi","应":"yìng","毕":"bì","退":"tuì","寻":"xún","梦":"mèng","归":"guī","悟":"wù",
+    "便":"biàn","弘":"hóng","未":"wèi","来":"lái","应":"yīng","使":"shǐ","分":"fēn","身":"shēn",
+    "舒":"shū","臂":"bì","摩":"mó","顶":"dǐng","作":"zuò","吾":"wú","化":"huà","刚":"gāng",
+    "调":"tiáo","舍":"shě","归":"guī","二":"èr","习":"xí","亦":"yì","亿":"yì","根":"gēn",
+    "勤":"qín","劝":"quàn","暗":"àn","钝":"dùn","重":"zhòng","敬":"jìng","差":"chā","别":"bié",
+    "现":"xiàn","女":"nǚ","林":"lín","川":"chuān","原":"yuán","河":"hé","池":"chí","泉":"quán",
+    "井":"jǐng","利":"lì","帝":"dì","梵":"fàn","转":"zhuǎn","轮":"lún","居":"jū","士":"shì",
+    "宰":"zǎi","辅":"fǔ","官":"guān","属":"shǔ","独":"dú","累":"lěi","付":"fù","嘱":"zhǔ",
+    "弥":"mí","勒":"lè","出":"chū","遇":"yù","涕":"tì","泪":"lèi","哀":"āi","接":"jiē",
+    "获":"huò","遍":"biàn","每":"měi","但":"dàn","毛":"máo","渧":"dī","沙":"shā","毫":"háo",
+    "渐":"jiàn","虑":"lǜ","助":"zhù","喜":"xǐ","毕":"bì","证":"zhèng","耶":"yē","夫":"fū",
+    "业":"yè","别":"bié","报":"bào","粗":"cū","听":"tīng","受":"shòu","孝":"xiào","父":"fù",
+    "杀":"shā","害":"hài","血":"xuè","毁":"huǐ","谤":"bàng","经":"jīng","侵":"qīn","损":"sǔn",
+    "玷":"diàn","污":"wū","僧":"sēng","尼":"ní","内":"nèi","恣":"zì","淫":"yín","伪":"wěi",
+    "心":"xīn","破":"pò","用":"yòng","欺":"qī","诳":"kuáng","衣":"yī","背":"bèi","违":"wéi",
+    "戒":"jiè","律":"lǜ","种":"zhǒng","偷":"tōu","窃":"qiè","财":"cái","谷":"gǔ","米":"mǐ",
+    "饮":"yǐn","食":"shí","服":"fú","与":"yǔ","取":"qǔ","暂":"zàn","停":"tíng","得":"dé",
+    "匝":"zā","周":"zhōu","余":"yú","里":"lǐ","纯":"chún","高":"gāo","火":"huǒ","聚":"jù",
+    "少":"shǎo","缺":"quē","连":"lián","独":"dú","彻":"chè","蛇":"shé","狗":"gǒu","吐":"tǔ",
+    "墙":"qiáng","床":"chuáng","卧":"wò","满":"mǎn","自":"zì","见":"jiàn","备":"bèi","受":"shòu",
+    "电":"diàn","铜":"tóng","爪":"zhuǎ","拖":"tuō","拽":"zhuài","戟":"jǐ","腹":"fù","背":"bèi",
+    "抛":"pāo","翻":"fān","接":"jiē","鹰":"yīng","啖":"dàn","缴":"jiǎo","颈":"jǐng","肢":"zhī",
+    "钉":"dīng","拔":"bá","舌":"shé","耕":"gēng","犁":"lí","抽":"chōu","肠":"cháng","剉":"cuò",
+    "斩":"zhǎn","洋":"yáng","灌":"guàn","缠":"chán","万":"wàn","动":"dòng","经":"jīng","坏":"huài",
+    "寄":"jì","展":"zhǎn","还":"huán","五":"wǔ","事":"shì","断":"duàn","羌":"qiāng","胡":"hú",
+    "夷":"yí","狄":"dí","老":"lǎo","幼":"yòu","贵":"guì","贱":"jiàn","尽":"jìn","说":"shuō"
+};
+
+// 复合词拼音（优先匹配）
+const wordPinyin = {
+    "南无": "nā mó", "摩诃萨": "mó hē sà", "婆罗门": "pó luó mén",
+    "文殊师利": "wén shū shī lì", "释迦牟尼": "shì jiā móu ní",
+    "般若": "bō rě", "波罗蜜": "bō luó mì", "阿僧祇": "ā sēng qí",
+    "那由他": "nuó yóu tā", "忉利天": "dāo lì tiān", "阎浮提": "yán fú tí",
+    "优婆塞": "yōu pó sāi", "优婆夷": "yōu pó yí", "夜叉": "yè chā",
+    "辟支佛": "pì zhī fó", "阿罗汉": "ā luó hàn", "比丘尼": "bǐ qiū ní",
+    "转轮王": "zhuǎn lún wáng", "善男子": "shàn nán zǐ", "善女人": "shàn nǚ rén",
+    "地狱": "dì yù", "无间": "wú jiàn", "娑婆": "suō pó",
+    "菩萨": "pú sà", "比丘": "bǐ qiū", "伽蓝": "qié lán",
+    "三昧": "sān mèi", "菩提": "pú tí", "涅槃": "niè pán",
+    "五浊": "wǔ zhuó", "恶世": "è shì", "三宝": "sān bǎo",
+    "天龙八部": "tiān lóng bā bù", "恒河沙": "héng hé shā",
+    "十方": "shí fāng", "无量": "wú liàng", "不可思议": "bù kě sī yì",
+    "六道": "liù dào", "三恶道": "sān è dào", "因缘": "yīn yuán",
+    "功德": "gōng dé", "供养": "gōng yǎng", "瞻礼": "zhān lǐ",
+    "回向": "huí xiàng", "授记": "shòu jì", "摩顶": "mó dǐng",
+    "十地": "shí dì", "五戒": "wǔ jiè", "十善": "shí shàn",
+    "精进": "jīng jìn", "慈悲": "cí bēi", "方便": "fāng biàn",
+    "神通": "shén tōng", "化身": "huà shēn", "弥勒": "mí lè",
+    "观世音": "guān shì yīn", "普贤": "pǔ xián", "虚空藏": "xū kōng zàng",
+    "阿耨多罗三藐三菩提": "ā nòu duō luó sān miǎo sān pú tí"
+};
+
+// 为文本添加拼音标注
+function addPinyinToText(text) {
+    let result = [];
+    let i = 0;
+    
+    while (i < text.length) {
+        let matched = false;
+        
+        // 跳过空白和换行
+        if (text[i] === '\n') {
+            result.push('<br>');
+            i++;
+            continue;
+        }
+        
+        if (text[i] === ' ' || text[i] === '\t') {
+            i++;
+            continue;
+        }
+        
+        // 标点符号
+        if (/[，。！？；：、""''（）《》【】…—]/.test(text[i])) {
+            result.push(`<span class="punct">${text[i]}</span>`);
+            i++;
+            continue;
+        }
+        
+        // 先尝试匹配长词（4字、3字、2字）
+        for (let len = Math.min(4, text.length - i); len >= 2; len--) {
+            const word = text.substr(i, len);
+            if (wordPinyin[word]) {
+                result.push(`<ruby>${word}<rt>${wordPinyin[word]}</rt></ruby>`);
+                i += len;
+                matched = true;
+                break;
+            }
+        }
+        
+        // 单字
+        if (!matched) {
+            const char = text[i];
+            if (/[\u4e00-\u9fa5]/.test(char)) {
+                const py = charPinyinFull[char];
+                if (py) {
+                    result.push(`<ruby>${char}<rt>${py}</rt></ruby>`);
+                } else {
+                    result.push(`<span class="no-pinyin">${char}</span>`);
+                }
+            } else {
+                result.push(char);
+            }
+            i++;
+        }
+    }
+    
+    return result.join('');
+}
+
+// 为文本添加注解标记
+function addAnnotationsToText(text) {
+    let result = text;
+    
+    // 按长度排序，先替换长词
+    const sortedTerms = Object.keys(annotations).sort((a, b) => b.length - a.length);
+    
+    for (const term of sortedTerms) {
+        const info = annotations[term];
+        const regex = new RegExp(term, 'g');
+        result = result.replace(regex, 
+            `<span class="term" data-term="${term}" data-pinyin="${info.pinyin}" data-note="${info.note}">${term}</span>`
+        );
+    }
+    
+    return result;
+}
+
+// 导出
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { addPinyinToText, addAnnotationsToText, annotations, charPinyinFull, wordPinyin };
+}
+</script>
+<script>
+// 金刚经完整仪轨（含香赞、真言）
+const jingpinData = [
+{title:"法会因由分第一",content:`如是我闻。一时佛在舍卫国祇树给孤独园，与大比丘众千二百五十人俱。尔时世尊食时，著衣持钵，入舍卫大城乞食。于其城中次第乞已，还至本处。饭食讫，收衣钵，洗足已，敷座而坐。`},
+{title:"善现启请分第二",content:`时长老须菩提在大众中，即从座起，偏袒右肩，右膝著地，合掌恭敬而白佛言：「希有世尊！如来善护念诸菩萨，善付嘱诸菩萨。世尊！善男子、善女人，发阿耨多罗三藐三菩提心，应云何住？云何降伏其心？」佛言：「善哉！善哉！须菩提！如汝所说，如来善护念诸菩萨，善付嘱诸菩萨。汝今谛听，当为汝说。善男子、善女人，发阿耨多罗三藐三菩提心，应如是住，如是降伏其心。」「唯然，世尊！愿乐欲闻。」`},
+{title:"大乘正宗分第三",content:`佛告须菩提：「诸菩萨摩诃萨应如是降伏其心：所有一切众生之类，若卵生、若胎生、若湿生、若化生，若有色、若无色，若有想、若无想、若非有想非无想，我皆令入无余涅槃而灭度之。如是灭度无量无数无边众生，实无众生得灭度者。何以故？须菩提！若菩萨有我相、人相、众生相、寿者相，即非菩萨。`},
+{title:"妙行无住分第四",content:`「复次，须菩提！菩萨于法应无所住行于布施，所谓不住色布施，不住声、香、味、触、法布施。须菩提！菩萨应如是布施，不住于相。何以故？若菩萨不住相布施，其福德不可思量。须菩提！于意云何？东方虚空可思量不？」「不也，世尊！」「须菩提！南、西、北方、四维、上、下虚空可思量不？」「不也，世尊！」「须菩提！菩萨无住相布施，福德亦复如是不可思量。须菩提！菩萨但应如所教住。`},
+{title:"如理实见分第五",content:`「须菩提！于意云何？可以身相见如来不？」「不也，世尊！不可以身相得见如来。何以故？如来所说身相，即非身相。」佛告须菩提：「凡所有相，皆是虚妄。若见诸相非相，即见如来。」`},
+{title:"正信希有分第六",content:`须菩提白佛言：「世尊！颇有众生，得闻如是言说章句，生实信不？」佛告须菩提：「莫作是说。如来灭后后五百岁，有持戒修福者，于此章句能生信心，以此为实。当知是人不于一佛、二佛、三四五佛而种善根，已于无量千万佛所种诸善根。闻是章句，乃至一念生净信者，须菩提！如来悉知悉见，是诸众生得如是无量福德。何以故？是诸众生无复我相、人相、众生相、寿者相，无法相，亦无非法相。何以故？是诸众生，若心取相，即为著我、人、众生、寿者。若取法相，即著我、人、众生、寿者。何以故？若取非法相，即著我、人、众生、寿者。是故不应取法，不应取非法。以是义故，如来常说：汝等比丘，知我说法如筏喻者，法尚应舍，何况非法。」`},
+{title:"无得无说分第七",content:`「须菩提！于意云何？如来得阿耨多罗三藐三菩提耶？如来有所说法耶？」须菩提言：「如我解佛所说义，无有定法名阿耨多罗三藐三菩提，亦无有定法如来可说。何以故？如来所说法，皆不可取、不可说，非法、非非法。所以者何？一切贤圣皆以无为法而有差别。」`},
+{title:"依法出生分第八",content:`「须菩提！于意云何？若人满三千大千世界七宝以用布施，是人所得福德宁为多不？」须菩提言：「甚多，世尊！何以故？是福德即非福德性，是故如来说福德多。」「若复有人于此经中，受持乃至四句偈等，为他人说，其福胜彼。何以故？须菩提！一切诸佛及诸佛阿耨多罗三藐三菩提法，皆从此经出。须菩提！所谓佛法者，即非佛法。`},
+{title:"一相无相分第九",content:`「须菩提！于意云何？须陀洹能作是念：我得须陀洹果不？」须菩提言：「不也，世尊！何以故？须陀洹名为入流，而无所入，不入色、声、香、味、触、法，是名须陀洹。」「须菩提！于意云何？斯陀含能作是念：我得斯陀含果不？」须菩提言：「不也，世尊！何以故？斯陀含名一往来，而实无往来，是名斯陀含。」「须菩提！于意云何？阿那含能作是念：我得阿那含果不？」须菩提言：「不也，世尊！何以故？阿那含名为不来，而实无不来，是故名阿那含。」「须菩提！于意云何？阿罗汉能作是念：我得阿罗汉道不？」须菩提言：「不也，世尊！何以故？实无有法名阿罗汉。世尊！若阿罗汉作是念：我得阿罗汉道，即为著我、人、众生、寿者。世尊！佛说我得无诤三昧，人中最为第一，是第一离欲阿罗汉。我不作是念：我是离欲阿罗汉。世尊！我若作是念：我得阿罗汉道，世尊则不说须菩提是乐阿兰那行者。以须菩提实无所行，而名须菩提是乐阿兰那行。`},
+{title:"庄严净土分第十",content:`佛告须菩提：「于意云何？如来昔在然灯佛所，于法有所得不？」「不也，世尊！如来在然灯佛所，于法实无所得。」「须菩提！于意云何？菩萨庄严佛土不？」「不也，世尊！何以故？庄严佛土者，即非庄严，是名庄严。」「是故，须菩提！诸菩萨摩诃萨应如是生清净心，不应住色生心，不应住声、香、味、触、法生心，应无所住而生其心。须菩提！譬如有人身如须弥山王，于意云何？是身为大不？」须菩提言：「甚大，世尊！何以故？佛说非身，是名大身。」`},
+{title:"无为福胜分第十一",content:`「须菩提！如恒河中所有沙数，如是沙等恒河，于意云何？是诸恒河沙宁为多不？」须菩提言：「甚多，世尊！但诸恒河尚多无数，何况其沙。」「须菩提！我今实言告汝：若有善男子、善女人，以七宝满尔所恒河沙数三千大千世界以用布施，得福多不？」须菩提言：「甚多，世尊！」佛告须菩提：「若善男子、善女人于此经中，乃至受持四句偈等，为他人说，而此福德胜前福德。`},
+{title:"尊重正教分第十二",content:`「复次，须菩提！随说是经，乃至四句偈等，当知此处一切世间天、人、阿修罗，皆应供养如佛塔庙，何况有人尽能受持读诵。须菩提！当知是人成就最上第一希有之法。若是经典所在之处，则为有佛，若尊重弟子。」`},
+{title:"如法受持分第十三",content:`尔时须菩提白佛言：「世尊！当何名此经？我等云何奉持？」佛告须菩提：「是经名为《金刚般若波罗蜜》，以是名字，汝当奉持。所以者何？须菩提！佛说般若波罗蜜，即非般若波罗蜜，是名般若波罗蜜。须菩提！于意云何？如来有所说法不？」须菩提白佛言：「世尊！如来无所说。」「须菩提！于意云何？三千大千世界所有微尘，是为多不？」须菩提言：「甚多，世尊！」「须菩提！诸微尘，如来说非微尘，是名微尘。如来说世界，非世界，是名世界。」「须菩提！于意云何？可以三十二相见如来不？」「不也，世尊！不可以三十二相得见如来。何以故？如来说三十二相，即是非相，是名三十二相。」「须菩提！若有善男子、善女人，以恒河沙等身命布施，若复有人于此经中，乃至受持四句偈等，为他人说，其福甚多！」`},
+{title:"离相寂灭分第十四",content:`尔时须菩提闻说是经，深解义趣，涕泪悲泣而白佛言：「希有世尊！佛说如是甚深经典，我从昔来所得慧眼，未曾得闻如是之经。世尊！若复有人得闻是经，信心清净，即生实相，当知是人成就第一希有功德。世尊！是实相者，即是非相，是故如来说名实相。世尊！我今得闻如是经典，信解受持，不足为难。若当来世后五百岁，其有众生得闻是经，信解受持，是人即为第一希有。何以故？此人无我相、无人相、无众生相、无寿者相。所以者何？我相即是非相，人相、众生相、寿者相即是非相。何以故？离一切诸相，即名诸佛。」佛告须菩提：「如是，如是！若复有人得闻是经，不惊、不怖、不畏，当知是人甚为希有。何以故？须菩提！如来说第一波罗蜜，即非第一波罗蜜，是名第一波罗蜜。须菩提！忍辱波罗蜜，如来说非忍辱波罗蜜，是名忍辱波罗蜜。何以故？须菩提！如我昔为歌利王割截身体，我于尔时无我相、无人相、无众生相、无寿者相。何以故？我于往昔节节支解时，若有我相、人相、众生相、寿者相，应生瞋恨。须菩提！又念过去于五百世作忍辱仙人，于尔所世无我相、无人相、无众生相、无寿者相。是故，须菩提！菩萨应离一切相发阿耨多罗三藐三菩提心，不应住色生心，不应住声、香、味、触、法生心，应生无所住心。若心有住，即为非住。是故佛说菩萨心不应住色布施。须菩提！菩萨为利益一切众生故，应如是布施。如来说一切诸相即是非相，又说一切众生即非众生。须菩提！如来是真语者、实语者、如语者、不诳语者、不异语者。须菩提！如来所得法，此法无实无虚。须菩提！若菩萨心住于法而行布施，如人入暗，即无所见；若菩萨心不住法而行布施，如人有目，日光明照，见种种色。须菩提！当来之世，若有善男子、善女人，能于此经受持读诵，即为如来，以佛智慧悉知是人、悉见是人，皆得成就无量无边功德。`},
+{title:"持经功德分第十五",content:`「须菩提！若有善男子、善女人，初日分以恒河沙等身布施，中日分复以恒河沙等身布施，后日分亦以恒河沙等身布施，如是无量百千万亿劫以身布施。若复有人闻此经典，信心不逆，其福胜彼，何况书写、受持、读诵、为人解说！须菩提！以要言之，是经有不可思议、不可称量、无边功德。如来为发大乘者说，为发最上乘者说。若有人能受持读诵，广为人说，如来悉知是人、悉见是人，皆得成就不可量、不可称、无有边、不可思议功德。如是人等，即为荷担如来阿耨多罗三藐三菩提。何以故？须菩提！若乐小法者，著我见、人见、众生见、寿者见，则于此经不能听受读诵、为人解说。须菩提！在在处处，若有此经，一切世间天、人、阿修罗所应供养，当知此处即为是塔，皆应恭敬作礼围绕，以诸华香而散其处。`},
+{title:"能净业障分第十六",content:`「复次，须菩提！若善男子、善女人受持读诵此经，若为人轻贱，是人先世罪业应堕恶道，以今世人轻贱故，先世罪业即为消灭，当得阿耨多罗三藐三菩提。须菩提！我念过去无量阿僧祇劫，于然灯佛前，得值八百四千万亿那由他诸佛，悉皆供养承事，无空过者。若复有人于后末世，能受持读诵此经，所得功德，于我所供养诸佛功德，百分不及一，千万亿分乃至算数譬喻所不能及。须菩提！若善男子、善女人于后末世，有受持读诵此经，所得功德，我若具说者，或有人闻，心即狂乱，狐疑不信。须菩提！当知是经义不可思议，果报亦不可思议。」`},
+{title:"究竟无我分第十七",content:`尔时须菩提白佛言：「世尊！善男子、善女人发阿耨多罗三藐三菩提心，云何应住？云何降伏其心？」佛告须菩提：「善男子、善女人发阿耨多罗三藐三菩提心者，当生如是心：我应灭度一切众生，灭度一切众生已，而无有一众生实灭度者。何以故？须菩提！若菩萨有我相、人相、众生相、寿者相，即非菩萨。所以者何？须菩提！实无有法发阿耨多罗三藐三菩提心者。须菩提！于意云何？如来于然灯佛所，有法得阿耨多罗三藐三菩提不？」「不也，世尊！如我解佛所说义，佛于然灯佛所，无有法得阿耨多罗三藐三菩提。」佛言：「如是，如是！须菩提！实无有法如来得阿耨多罗三藐三菩提。须菩提！若有法如来得阿耨多罗三藐三菩提者，然灯佛则不与我授记：汝于来世当得作佛，号释迦牟尼。以实无有法得阿耨多罗三藐三菩提，是故然灯佛与我授记，作是言：汝于来世当得作佛，号释迦牟尼。何以故？如来者，即诸法如义。若有人言如来得阿耨多罗三藐三菩提，须菩提！实无有法佛得阿耨多罗三藐三菩提。须菩提！如来所得阿耨多罗三藐三菩提，于是中无实无虚，是故如来说一切法皆是佛法。须菩提！所言一切法者，即非一切法，是故名一切法。须菩提！譬如人身长大。」须菩提言：「世尊！如来说人身长大，即为非大身，是名大身。」「须菩提！菩萨亦如是。若作是言：我当灭度无量众生，即不名菩萨。何以故？须菩提！实无有法名为菩萨。是故佛说一切法无我、无人、无众生、无寿者。须菩提！若菩萨作是言：我当庄严佛土，是不名菩萨。何以故？如来说庄严佛土者，即非庄严，是名庄严。须菩提！若菩萨通达无我法者，如来说名真是菩萨。`},
+{title:"一体同观分第十八",content:`「须菩提！于意云何？如来有肉眼不？」「如是，世尊！如来有肉眼。」「须菩提！于意云何？如来有天眼不？」「如是，世尊！如来有天眼。」「须菩提！于意云何？如来有慧眼不？」「如是，世尊！如来有慧眼。」「须菩提！于意云何？如来有法眼不？」「如是，世尊！如来有法眼。」「须菩提！于意云何？如来有佛眼不？」「如是，世尊！如来有佛眼。」「须菩提！于意云何？如恒河中所有沙，佛说是沙不？」「如是，世尊！如来说是沙。」「须菩提！于意云何？如一恒河中所有沙，有如是沙等恒河，是诸恒河所有沙数佛世界，如是宁为多不？」「甚多，世尊！」佛告须菩提：「尔所国土中所有众生若干种心，如来悉知。何以故？如来说诸心皆为非心，是名为心。所以者何？须菩提！过去心不可得，现在心不可得，未来心不可得。`},
+{title:"法界通化分第十九",content:`「须菩提！于意云何？若有人满三千大千世界七宝以用布施，是人以是因缘得福多不？」「如是，世尊！此人以是因缘得福甚多。」「须菩提！若福德有实，如来不说得福德多，以福德无故，如来说得福德多。`},
+{title:"离色离相分第二十",content:`「须菩提！于意云何？佛可以具足色身见不？」「不也，世尊！如来不应以具足色身见。何以故？如来说具足色身，即非具足色身，是名具足色身。」「须菩提！于意云何？如来可以具足诸相见不？」「不也，世尊！如来不应以具足诸相见。何以故？如来说诸相具足，即非具足，是名诸相具足。`},
+{title:"非说所说分第二十一",content:`「须菩提！汝勿谓如来作是念：我当有所说法。莫作是念！何以故？若人言如来有所说法，即为谤佛，不能解我所说故。须菩提！说法者无法可说，是名说法。」尔时慧命须菩提白佛言：「世尊！颇有众生于未来世闻说是法，生信心不？」佛言：「须菩提！彼非众生，非不众生。何以故？须菩提！众生众生者，如来说非众生，是名众生。`},
+{title:"无法可得分第二十二",content:`须菩提白佛言：「世尊！佛得阿耨多罗三藐三菩提，为无所得耶？」佛言：「如是，如是！须菩提！我于阿耨多罗三藐三菩提，乃至无有少法可得，是名阿耨多罗三藐三菩提。`},
+{title:"净心行善分第二十三",content:`「复次，须菩提！是法平等，无有高下，是名阿耨多罗三藐三菩提。以无我、无人、无众生、无寿者，修一切善法，即得阿耨多罗三藐三菩提。须菩提！所言善法者，如来说即非善法，是名善法。`},
+{title:"福智无比分第二十四",content:`「须菩提！若三千大千世界中所有诸须弥山王，如是等七宝聚，有人持用布施。若人以此般若波罗蜜经乃至四句偈等，受持读诵、为他人说，于前福德百分不及一，百千万亿分乃至算数譬喻所不能及。`},
+{title:"化无所化分第二十五",content:`「须菩提！于意云何？汝等勿谓如来作是念：我当度众生。须菩提！莫作是念。何以故？实无有众生如来度者。若有众生如来度者，如来即有我、人、众生、寿者。须菩提！如来说有我者，即非有我，而凡夫之人以为有我。须菩提！凡夫者，如来说即非凡夫，是名凡夫。`},
+{title:"法身非相分第二十六",content:`「须菩提！于意云何？可以三十二相观如来不？」须菩提言：「如是，如是！以三十二相观如来。」佛言：「须菩提！若以三十二相观如来者，转轮圣王即是如来。」须菩提白佛言：「世尊！如我解佛所说义，不应以三十二相观如来。」尔时世尊而说偈言：「若以色见我，以音声求我，是人行邪道，不能见如来。」`},
+{title:"无断无灭分第二十七",content:`「须菩提！汝若作是念：如来不以具足相故，得阿耨多罗三藐三菩提。须菩提！莫作是念：如来不以具足相故，得阿耨多罗三藐三菩提。须菩提！汝若作是念：发阿耨多罗三藐三菩提心者，说诸法断灭。莫作是念！何以故？发阿耨多罗三藐三菩提心者，于法不说断灭相。`},
+{title:"不受不贪分第二十八",content:`「须菩提！若菩萨以满恒河沙等世界七宝持用布施，若复有人知一切法无我，得成于忍，此菩萨胜前菩萨所得功德。何以故？须菩提！以诸菩萨不受福德故。」须菩提白佛言：「世尊！云何菩萨不受福德？」「须菩提！菩萨所作福德，不应贪著，是故说不受福德。`},
+{title:"威仪寂净分第二十九",content:`「须菩提！若有人言如来若来若去、若坐若卧，是人不解我所说义。何以故？如来者，无所从来，亦无所去，故名如来。`},
+{title:"一合理相分第三十",content:`「须菩提！若善男子、善女人，以三千大千世界碎为微尘，于意云何？是微尘众宁为多不？」「甚多，世尊！何以故？若是微尘众实有者，佛即不说是微尘众。所以者何？佛说微尘众，即非微尘众，是名微尘众。世尊！如来所说三千大千世界，即非世界，是名世界。何以故？若世界实有者，即是一合相。如来说一合相，即非一合相，是名一合相。」「须菩提！一合相者，即是不可说，但凡夫之人贪著其事。`},
+{title:"知见不生分第三十一",content:`「须菩提！若人言佛说我见、人见、众生见、寿者见，须菩提！于意云何？是人解我所说义不？」「不也，世尊！是人不解如来所说义。何以故？世尊说我见、人见、众生见、寿者见，即非我见、人见、众生见、寿者见，是名我见、人见、众生见、寿者见。」「须菩提！发阿耨多罗三藐三菩提心者，于一切法应如是知、如是见、如是信解，不生法相。须菩提！所言法相者，如来说即非法相，是名法相。`},
+{title:"应化非真分第三十二",content:`「须菩提！若有人以满无量阿僧祇世界七宝持用布施，若有善男子、善女人发菩萨心者，持于此经乃至四句偈等，受持读诵为人演说，其福胜彼。云何为人演说？不取于相，如如不动。何以故？一切有为法，如梦幻泡影，如露亦如电，应作如是观。」佛说是经已，长老须菩提及诸比丘、比丘尼、优婆塞、优婆夷，一切世间天、人、阿修罗，闻佛所说，皆大欢喜，信受奉行。`}
+];
+
+let currentJingpin = -1;
+let isPlaying = false;
+let speechUtterance = null;
+let stats = JSON.parse(localStorage.getItem('jinjing_stats') || '{"totalDays":0,"completedJingpins":[],"currentStreak":0,"lastVisit":null}');
+
+// iOS 语音引擎预热
+let iosSpeechReady = false;
+
+function warmupSpeech() {
+    if (iosSpeechReady) return;
+    
+    // iOS Safari 需要先"唤醒"语音引擎
+    const warmup = new SpeechSynthesisUtterance('');
+    warmup.lang = 'zh-CN';
+    warmup.rate = 1;
+    warmup.volume = 0; // 静音
+    warmup.onend = () => {
+        iosSpeechReady = true;
+        console.log('iOS 语音引擎已就绪');
+    };
+    warmup.onerror = () => {
+        // 即使出错也标记为已尝试
+        iosSpeechReady = true;
+    };
+    speechSynthesis.speak(warmup);
+}
+
+// 检测是否在微信内
+function isWechat() {
+    const ua = navigator.userAgent.toLowerCase();
+    return ua.indexOf('micromessenger') !== -1;
+}
+
+// 初始化
+function init() {
+    try {
+        // 检测微信，显示提示
+        if (isWechat()) {
+            const weixinTip = document.getElementById('weixinTip');
+            if (weixinTip) weixinTip.classList.add('show');
+        }
+        
+        // 初始化点击跳转功能（只绑定一次）
+        setupClickToJump();
+        
+        renderJingpinSelector();
+        updateStats();
+        checkDailyVisit();
+        setupTermClick();
+        setupEventListeners();
+        
+        // iOS 兼容：页面加载后预热语音引擎
+        document.addEventListener('click', function initSpeech() {
+            warmupSpeech();
+            document.removeEventListener('click', initSpeech);
+        }, { once: true });
+    } catch (e) {
+        console.error('初始化错误:', e);
+    }
+}
+
+// 设置事件监听器（使用事件委托，更可靠）
+function setupEventListeners() {
+    // 品目选择器 - 使用事件委托
+    const selector = document.getElementById('jingpinSelector');
+    if (selector) {
+        selector.addEventListener('click', function(e) {
+            const btn = e.target.closest('.jingpin-btn');
+            if (btn) {
+                const index = parseInt(btn.getAttribute('data-index'));
+                selectJingpin(index);
+            }
+        });
+    }
+    
+    // 导航按钮
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            showTab(this.getAttribute('data-tab'));
+        });
+    });
+    
+    // 播放控制按钮
+    const playBtn = document.getElementById('playBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    
+    if (playBtn) playBtn.addEventListener('click', playAudio);
+    if (pauseBtn) pauseBtn.addEventListener('click', pauseAudio);
+    if (stopBtn) stopBtn.addEventListener('click', stopAudio);
+    
+    // 语速选择
+    const speedSelect = document.getElementById('speedSelect');
+    if (speedSelect) speedSelect.addEventListener('change', changeSpeed);
+    
+    // 拼音开关
+    const togglePinyin = document.getElementById('togglePinyin');
+    if (togglePinyin) togglePinyin.addEventListener('change', togglePinyinDisplay);
+    
+    // 注解高亮开关
+    const toggleAnnotate = document.getElementById('toggleAnnotate');
+    if (toggleAnnotate) toggleAnnotate.addEventListener('change', toggleAnnotationHighlight);
+    
+    // 进度滑块
+    const slider = document.getElementById('readPositionSlider');
+    if (slider) slider.addEventListener('input', function() {
+        seekToPosition(this.value);
+    });
+}
+
+// 设置词汇点击事件
+function setupTermClick() {
+    const jingwenContent = document.getElementById('jingwenContent');
+    if (jingwenContent) {
+        jingwenContent.addEventListener('click', function(e) {
+            if (e.target.classList.contains('term') || e.target.closest('.term')) {
+                const term = e.target.classList.contains('term') ? e.target : e.target.closest('.term');
+                const termText = term.getAttribute('data-term');
+                const pinyin = term.getAttribute('data-pinyin');
+                const note = term.getAttribute('data-note');
+                showNotePopup(termText, pinyin, note);
+            }
+        });
+    }
+}
+
+// 显示注解弹窗
+function showNotePopup(term, pinyin, note) {
+    document.getElementById('notePopupTitle').textContent = term;
+    document.getElementById('notePopupPinyin').textContent = pinyin;
+    document.getElementById('notePopupNote').textContent = note;
+    document.getElementById('notePopup').classList.add('show');
+    document.getElementById('overlay').classList.add('show');
+}
+
+// 关闭注解弹窗
+function closeNotePopup() {
+    document.getElementById('notePopup').classList.remove('show');
+    document.getElementById('overlay').classList.remove('show');
+}
+
+// 渲染品目选择器
+function renderJingpinSelector() {
+    const container = document.getElementById('jingpinSelector');
+    if (!container) {
+        console.error('jingpinSelector 容器不存在');
+        return;
+    }
+    
+    container.innerHTML = jingpinData.map((jp, index) => {
+        const isCompleted = stats.completedJingpins.includes(index);
+        return `<button class="jingpin-btn ${isCompleted ? 'completed' : ''}" data-index="${index}"><span class="num">${index + 1}.</span> ${jp.title}</button>`;
+    }).join('');
+    
+    updateProgress();
+}
+
+// 选择品目
+window.selectJingpin = function(index) {
+    currentJingpin = index;
+    
+    // 更新按钮选中状态
+    document.querySelectorAll('.jingpin-btn').forEach((btn, i) => {
+        btn.classList.remove('selected');
+        if (i === index) {
+            btn.classList.add('selected');
+        }
+    });
+    
+    // 重置语音合成状态 - 加安全检查
+    try {
+        if (window.speechSynthesis) {
+            speechSynthesis.cancel();
+        }
+    } catch (e) {}
+    isPlaying = false;
+    currentChunkIndex = 0;
+    
+    const jp = jingpinData[index];
+    document.getElementById('currentJingpin').textContent = jp.title;
+    
+    // 准备分段数据
+    prepareTextChunks(jp.content);
+    
+    // 处理文本：逐字处理，同时添加拼音、注解和位置标记
+    const text = jp.content;
+    let result = '';
+    
+    // 先找出所有需要注解的术语及其位置
+    const termPositions = [];
+    const sortedTerms = Object.keys(annotations).sort((a, b) => b.length - a.length);
+    for (const term of sortedTerms) {
+        let pos = 0;
+        let searchPos = 0;
+        while ((pos = text.indexOf(term, searchPos)) !== -1) {
+            termPositions.push({
+                term: term,
+                start: pos,
+                end: pos + term.length,
+                info: annotations[term]
+            });
+            searchPos = pos + 1;
+        }
+    }
+    
+    // 按开始位置排序
+    termPositions.sort((a, b) => a.start - b.start);
+    
+    // 逐字处理
+    let i = 0;
+    while (i < text.length) {
+        if (text[i] === '\n') {
+            result += '<br>';
+            i++;
+            continue;
+        }
+        
+        // 检查当前位置是否在某个术语中
+        const termAtPos = termPositions.find(t => i >= t.start && i < t.end);
+        
+        if (termAtPos && i === termAtPos.start) {
+            // 这是术语的开始
+            const term = termAtPos.term;
+            const termText = text.substr(termAtPos.start, term.length);
+            const pinyin = wordPinyin[term] || termAtPos.info.pinyin;
+            
+            result += `<span class="term" data-term="${term}" data-pinyin="${termAtPos.info.pinyin}" data-note="${termAtPos.info.note}" data-pos="${i}">`;
+            result += `<ruby>${termText}<rt>${pinyin}</rt></ruby>`;
+            result += '</span>';
+            
+            i += term.length;
+        } else if (!termAtPos) {
+            // 普通字符
+            const char = text[i];
+            if (/[\u4e00-\u9fa5]/.test(char)) {
+                const py = charPinyinFull[char];
+                if (py) {
+                    result += `<span data-pos="${i}"><ruby>${char}<rt>${py}</rt></ruby></span>`;
+                } else {
+                    result += `<span data-pos="${i}">${char}</span>`;
+                }
+            } else {
+                result += `<span data-pos="${i}">${char}</span>`;
+            }
+            i++;
+        } else {
+            // 在术语中间，跳过（已经在上面处理了）
+            i++;
+        }
+    }
+    
+    const container = document.getElementById('jingwenContent');
+    container.innerHTML = `<div class="jingwen-text" id="jingwenText"><p>${result}</p></div>`;
+    document.getElementById('jingwenContainer').classList.add('active');
+    document.getElementById('jingwenContainer').scrollIntoView({ behavior: 'smooth' });
+    
+    // 恢复上次阅读进度
+    setTimeout(() => {
+        const slider = document.getElementById('readPositionSlider');
+        const textEl = document.getElementById('readPositionText');
+        if (slider) slider.value = 0;
+        if (textEl) textEl.textContent = '0%';
+    }, 100);
+}
+
+// 设置点击跳转功能
+function setupClickToJump() {
+    document.addEventListener('click', function(e) {
+        // 检查是否点击的是带有 data-pos 属性的元素
+        let target = e.target;
+        let pos = null;
+        
+        // 向上查找带有 data-pos 的元素
+        for (let i = 0; i < 5 && target; i++) {
+            if (target.getAttribute && target.getAttribute('data-pos')) {
+                pos = parseInt(target.getAttribute('data-pos'));
+                break;
+            }
+            target = target.parentElement;
+        }
+        
+        // 如果没有找到 data-pos，返回
+        if (pos === null || isNaN(pos)) return;
+        
+        // 检查是否已经选择了品目
+        if (currentJingpin === -1) return;
+        
+        const allText = jingpinData[currentJingpin].content;
+        
+        // 停止当前播放
+        try { if (window.speechSynthesis) speechSynthesis.cancel(); } catch(e) {}
+        
+        // 准备分段数据
+        prepareTextChunks(allText);
+        
+        // 找到包含点击位置的分段
+        let foundChunkIndex = 0;
+        for (let j = 0; j < textChunks.length; j++) {
+            if (textChunks[j] && pos >= textChunks[j].start && pos < textChunks[j].end) {
+                foundChunkIndex = j;
+                break;
+            }
+        }
+        
+        // 更新进度
+        updateProgressSlider(pos, allText.length);
+        
+        const readProgress = JSON.parse(localStorage.getItem('jinjing_read') || '{}');
+        readProgress[currentJingpin] = pos;
+        localStorage.setItem('jinjing_read', JSON.stringify(readProgress));
+        
+        currentChunkIndex = foundChunkIndex;
+        isPlaying = true;
+        showNotification('✅ 从此处开始播放');
+        playNextChunk();
+    });
+}
+
+// 准备文本分段
+function prepareTextChunks(text) {
+    textChunks = [];
+    let i = 0;
+    let sentenceStart = 0;
+    
+    while (i < text.length) {
+        let char = text[i];
+        i++;
+        
+        if (/[，。！？、；]/.test(char) || i >= text.length) {
+            textChunks.push({
+                text: text.substring(sentenceStart, i),
+                start: sentenceStart,
+                end: i
+            });
+            sentenceStart = i;
+        }
+    }
+    
+    if (sentenceStart < text.length) {
+        textChunks.push({
+            text: text.substring(sentenceStart),
+            start: sentenceStart,
+            end: text.length
+        });
+    }
+}
+
+// 切换拼音显示
+window.togglePinyinDisplay = function() {
+    const container = document.getElementById('jingwenContent');
+    if (document.getElementById('togglePinyin').checked) {
+        container.classList.remove('hide-pinyin');
+    } else {
+        container.classList.add('hide-pinyin');
+    }
+}
+
+// 切换注解高亮
+window.toggleAnnotationHighlight = function() {
+    const container = document.getElementById('jingwenContent');
+    const terms = container.querySelectorAll('.term');
+    const show = document.getElementById('toggleAnnotate').checked;
+    terms.forEach(term => {
+        term.style.background = show ? 'linear-gradient(transparent 60%, #fff3cd 60%)' : 'none';
+    });
+}
+
+// 播放音频 - 修复版（带进度高亮）
+let currentChunkIndex = 0;
+let textChunks = [];
+let savedProgress = {}; // 保存每个品目的播放进度
+
+function playAudio() {
+    if (currentJingpin === -1) { 
+        showNotification('请先选择品目'); 
+        return; 
+    }
+    
+    const jp = jingpinData[currentJingpin];
+    const speed = parseFloat(document.getElementById('speedSelect').value);
+    
+    // 如果正在播放，不做任何操作
+    if (isPlaying && speechSynthesis.speaking) {
+        showNotification('正在播放中...');
+        return;
+    }
+    
+    // 安全取消之前的语音
+    try {
+        if (window.speechSynthesis) {
+            speechSynthesis.cancel();
+        }
+    } catch (e) {
+        // 忽略错误
+    }
+    
+    // 直接开始播放
+    startPlayback(jp, speed);
+}
+
+function startPlayback(jp, speed) {
+    // 清除之前的高亮
+    clearAllHighlights();
+    
+    // 如果分段数据已经准备好，不需要重新准备
+    if (!textChunks || textChunks.length === 0) {
+        prepareTextChunks(jp.content);
+    }
+    
+    // 从上次阅读进度继续播放
+    const readProgress = JSON.parse(localStorage.getItem('jinjing_read') || '{}');
+    const savedEnd = readProgress[currentJingpin] || 0;
+    
+    // 找到包含savedEnd的分段
+    let startChunkIndex = 0;
+    for (let i = 0; i < textChunks.length; i++) {
+        if (textChunks[i] && savedEnd >= textChunks[i].start && savedEnd < textChunks[i].end) {
+            startChunkIndex = i;
+            break;
+        }
+    }
+    
+    currentChunkIndex = startChunkIndex;
+    
+    isPlaying = true;
+    showNotification('开始播放：' + jp.title);
+    playNextChunk();
+}
+
+function playNextChunk() {
+    if (!isPlaying) return;
+    
+    if (currentChunkIndex >= textChunks.length) {
+        // 播放完成
+        isPlaying = false;
+        currentChunkIndex = 0;
+        savedProgress[currentJingpin] = 0;
+        clearAllHighlights();
+        completeJingpin();
+        showNotification('✅ 播放完成');
+        return;
+    }
+    
+    const chunk = textChunks[currentChunkIndex];
+    const speed = parseFloat(document.getElementById('speedSelect').value);
+    
+    // 高亮当前段落
+    highlightChunk(currentChunkIndex);
+    
+    // 过滤掉标点符号，只读文字
+    const textToRead = chunk.text.replace(/[，。！？；：、""''（）《》【】…—\s]/g, '');
+    
+    // 如果过滤后没有文字，跳过这个分段
+    if (!textToRead) {
+        currentChunkIndex++;
+        playNextChunk();
+        return;
+    }
+    
+    // 启动逐字高亮定时器
+    let charIndex = 0;
+    const totalChars = chunk.text.length;
+    const utteranceDuration = totalChars * 150 / speed; // 估算播放时间
+    
+    const highlightInterval = setInterval(() => {
+        if (!isPlaying || charIndex >= totalChars) {
+            clearInterval(highlightInterval);
+            return;
+        }
+        
+        // 更新高亮位置
+        const currentPos = chunk.start + charIndex;
+        updateReadDisplay(currentPos);
+        charIndex++;
+    }, utteranceDuration / totalChars); // 根据分段长度自动调整高亮速度
+    
+    const utterance = new SpeechSynthesisUtterance(processTextForTTS(textToRead));
+    utterance.lang = 'zh-CN';
+    utterance.rate = speed; // 使用用户选择的语速
+    
+    utterance.onend = () => {
+        clearInterval(highlightInterval); // 停止高亮定时器
+        
+        if (isPlaying) {
+            // 更新到这个句子的结尾
+            updateReadDisplay(chunk.end);
+            
+            // 更新进度滑块
+            updateProgressSlider(chunk.end, jingpinData[currentJingpin].content.length);
+            
+            // 保存阅读进度
+            const readProgress = JSON.parse(localStorage.getItem('jinjing_read') || '{}');
+            readProgress[currentJingpin] = chunk.end;
+            localStorage.setItem('jinjing_read', JSON.stringify(readProgress));
+            
+            currentChunkIndex++;
+            savedProgress[currentJingpin] = currentChunkIndex;
+            playNextChunk(); // 直接播放下一段
+        }
+    };
+    
+    utterance.onerror = (e) => {
+        console.error('语音错误:', e);
+        // 跳过当前段继续播放
+        currentChunkIndex++;
+        playNextChunk(); // 不延迟，直接继续
+    };
+    
+    speechSynthesis.speak(utterance);
+}
+
+function highlightChunk(index) {
+    // 高亮现在在 playNextChunk 中通过定时器处理
+    // 这个函数保留用于进度条更新
+    
+    if (!textChunks[index]) return;
+    
+    // 更新进度条
+    const progress = ((index + 1) / textChunks.length) * 100;
+    const progressFill = document.getElementById('progressFill');
+    if (progressFill) progressFill.style.width = progress + '%';
+}
+
+// 更新已读显示（保留拼音和注解属性）
+function updateReadDisplay(readEnd) {
+    const jingwenText = document.getElementById('jingwenText');
+    if (!jingwenText) return;
+    
+    // 遍历所有带有 data-pos 的 span，只更新颜色，不改变内容
+    const spans = jingwenText.querySelectorAll('[data-pos]');
+    spans.forEach(span => {
+        const pos = parseInt(span.getAttribute('data-pos'));
+        if (pos < readEnd) {
+            // 已读部分 - 墨绿色
+            span.style.color = '#15803d';
+        } else {
+            // 未读部分 - 恢复原色
+            span.style.color = '';
+        }
+    });
+    
+    // 更新进度滑块
+    const allText = jingpinData[currentJingpin].content;
+    updateProgressSlider(readEnd, allText.length);
+}
+
+// 恢复阅读进度
+function restoreReadProgress() {
+    if (currentJingpin === -1) return;
+    
+    const readProgress = JSON.parse(localStorage.getItem('jinjing_read') || '{}');
+    const savedEnd = readProgress[currentJingpin] || 0;
+    
+    if (savedEnd > 0) {
+        updateReadDisplay(savedEnd);
+        showNotification('已恢复上次阅读进度');
+    }
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function clearAllHighlights() {
+    // 重置进度条
+    const progressFill = document.getElementById('progressFill');
+    if (progressFill) progressFill.style.width = '0%';
+}
+
+// 暂停音频
+window.pauseAudio = function() {
+    if (speechSynthesis.speaking && !speechSynthesis.paused) {
+        speechSynthesis.pause();
+        isPlaying = false;
+        // 保存当前进度
+        savedProgress[currentJingpin] = currentChunkIndex;
+        showNotification('⏸️ 已暂停（点击播放继续）');
+    }
+}
+
+// 停止音频
+window.stopAudio = function() {
+    speechSynthesis.cancel();
+    isPlaying = false;
+    currentChunkIndex = 0;
+    clearAllHighlights();
+    // 清除保存的进度
+    if (currentJingpin !== -1) {
+        savedProgress[currentJingpin] = 0;
+    }
+}
+
+// 改变语速
+window.changeSpeed = function() {
+    const speed = parseFloat(document.getElementById('speedSelect').value);
+    const speedText = speed < 1 ? '慢速' : (speed > 1 ? '快速' : '正常');
+    if (isPlaying) {
+        showNotification('⚠️ 停止后重新播放以应用' + speedText + '设置');
+    } else {
+        showNotification('语速已设置为：' + speedText);
+    }
+}
+
+// 跳转到指定位置
+window.seekToPosition = function(percent) {
+    if (currentJingpin === -1) return;
+    
+    const jp = jingpinData[currentJingpin];
+    const totalLength = jp.content.length;
+    const targetPosition = Math.floor(totalLength * percent / 100);
+    
+    // 更新显示
+    updateReadDisplay(targetPosition);
+    const readPosText = document.getElementById('readPositionText');
+    const progressFill = document.getElementById('progressFill');
+    if (readPosText) readPosText.textContent = percent + '%';
+    if (progressFill) progressFill.style.width = percent + '%';
+    
+    // 保存进度
+    const readProgress = JSON.parse(localStorage.getItem('jinjing_read') || '{}');
+    readProgress[currentJingpin] = targetPosition;
+    localStorage.setItem('jinjing_read', JSON.stringify(readProgress));
+    
+    // 更新播放位置
+    for (let i = 0; i < textChunks.length; i++) {
+        if (textChunks[i].start >= targetPosition) {
+            currentChunkIndex = i;
+            break;
+        }
+        currentChunkIndex = i;
+    }
+    
+    showNotification('已跳转到 ' + percent + '%');
+}
+
+// 更新进度滑块
+function updateProgressSlider(position, total) {
+    const percent = Math.floor(position / total * 100);
+    const slider = document.getElementById('readPositionSlider');
+    const text = document.getElementById('readPositionText');
+    if (slider) slider.value = percent;
+    if (text) text.textContent = percent + '%';
+}
+
+// 完成品目
+function completeJingpin() {
+    if (currentJingpin === -1) return;
+    
+    // 获取当前遍已完成的品目列表
+    let currentRoundCompleted = JSON.parse(localStorage.getItem('jinjing_current_round') || '[]');
+    
+    // 标记当前品目为已完成（只统计正文13品：索引5-17）
+    const isMainJingpin = currentJingpin >= 5 && currentJingpin <= 17;
+    if (isMainJingpin && !currentRoundCompleted.includes(currentJingpin)) {
+        currentRoundCompleted.push(currentJingpin);
+        localStorage.setItem('jinjing_current_round', JSON.stringify(currentRoundCompleted));
+    }
+    
+    // 清除阅读进度（已完成）
+    const readProgress = JSON.parse(localStorage.getItem('jinjing_read') || '{}');
+    delete readProgress[currentJingpin];
+    localStorage.setItem('jinjing_read', JSON.stringify(readProgress));
+    
+    // 检查是否所有正文品目都完成了（13品）
+    if (currentRoundCompleted.length >= 13) {
+        // 全部读完，遍数+1
+        const totalReads = JSON.parse(localStorage.getItem('jinjing_total_reads') || '0');
+        const newTotal = parseInt(totalReads) + 1;
+        localStorage.setItem('jinjing_total_reads', newTotal.toString());
+        
+        // 重置当前遍完成记录
+        localStorage.setItem('jinjing_current_round', '[]');
+        
+        showNotification(`🎉 功德圆满！金刚经已诵读 ${newTotal} 遍！`);
+        
+        // 更新统计
+        updateStats();
+    } else if (isMainJingpin) {
+        showNotification(`✅ ${jingpinData[currentJingpin].title} 已完成（${currentRoundCompleted.length}/13）`);
+    } else {
+        showNotification(`✅ ${jingpinData[currentJingpin].title} 已完成`);
+    }
+    
+    if (!stats.completedJingpins.includes(currentJingpin)) {
+        stats.completedJingpins.push(currentJingpin);
+        saveStats();
+        renderJingpinSelector();
+        updateStats();
+    }
+}
+
+// 获取诵读遍数
+function getReadCount(jingpinIndex) {
+    const readCounts = JSON.parse(localStorage.getItem('jinjing_counts') || '{}');
+    return readCounts[jingpinIndex] || 0;
+}
+
+// 更新进度
+function updateProgress() {
+    const progress = (stats.completedJingpins.length / jingpinData.length) * 100;
+    const progressFill = document.getElementById('progressFill');
+    if (progressFill) progressFill.style.width = progress + '%';
+}
+
+// 更新统计
+function updateStats() {
+    const totalDaysEl = document.getElementById('totalDays');
+    const completedEl = document.getElementById('completedJingpins');
+    const streakEl = document.getElementById('currentStreak');
+    
+    if (totalDaysEl) totalDaysEl.textContent = stats.totalDays;
+    if (completedEl) completedEl.textContent = stats.completedJingpins.length + '/' + jingpinData.length;
+    if (streakEl) streakEl.textContent = stats.currentStreak;
+    
+    // 获取总诵读遍数
+    const totalReads = parseInt(localStorage.getItem('jinjing_total_reads') || '0');
+    
+    // 显示总诵读遍数
+    const totalReadsEl = document.getElementById('totalReads');
+    if (totalReadsEl) totalReadsEl.textContent = totalReads;
+    const totalReadsMainEl = document.getElementById('totalReadsMain');
+    if (totalReadsMainEl) totalReadsMainEl.textContent = totalReads;
+    
+    updateProgress();
+}
+
+// 检查每日访问
+function checkDailyVisit() {
+    const today = new Date().toDateString();
+    if (stats.lastVisit !== today) {
+        if (stats.lastVisit) {
+            const lastDate = new Date(stats.lastVisit);
+            const todayDate = new Date(today);
+            const diffDays = Math.floor((todayDate - lastDate) / (1000 * 60 * 60 * 24));
+            if (diffDays === 1) stats.currentStreak++;
+            else if (diffDays > 1) stats.currentStreak = 1;
+            stats.totalDays++;
+        } else {
+            stats.totalDays = 1;
+            stats.currentStreak = 1;
+        }
+        stats.lastVisit = today;
+        saveStats();
+        updateStats();
+    }
+}
+
+// 保存统计
+function saveStats() {
+    localStorage.setItem('jinjing_stats', JSON.stringify(stats));
+}
+
+// 切换标签页
+function showTab(tabName) {
+    document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+    if (event && event.target) event.target.classList.add('active');
+    
+    const readTab = document.getElementById('readTab');
+    const statsTab = document.getElementById('statsTab');
+    const aboutTab = document.getElementById('aboutTab');
+    
+    if (readTab) readTab.style.display = tabName === 'read' ? 'block' : 'none';
+    if (statsTab) statsTab.style.display = tabName === 'stats' ? 'block' : 'none';
+    if (aboutTab) aboutTab.style.display = tabName === 'about' ? 'block' : 'none';
+}
+
+// 显示通知
+function showNotification(message) {
+    const notification = document.getElementById('notification');
+    if (notification) {
+        notification.textContent = message;
+        notification.classList.add('show');
+        setTimeout(() => notification.classList.remove('show'), 3000);
+    }
+}
+
+// 立即初始化
+init();
+</script>
+</body>
+</html>

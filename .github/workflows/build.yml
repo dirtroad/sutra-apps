@@ -1,0 +1,65 @@
+name: Build APKs
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+    
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v3
+    
+    - name: Build Debug APKs
+      run: gradle assembleDebug --no-daemon
+    
+    - name: Rename APKs
+      run: |
+        mv app/build/outputs/apk/xinjing/debug/app-xinjing-debug.apk 心经诵读.apk
+        mv app/build/outputs/apk/jingangjing/debug/app-jingangjing-debug.apk 金刚经诵读.apk
+        mv app/build/outputs/apk/dizangjing/debug/app-dizangjing-debug.apk 地藏经诵读.apk
+    
+    - name: Upload APKs
+      uses: actions/upload-artifact@v4
+      with:
+        name: sutra-apks
+        path: |
+          心经诵读.apk
+          金刚经诵读.apk
+          地藏经诵读.apk
+    
+    - name: Create Release with APKs
+      if: github.event_name == 'push'
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: v1.0.${{ github.run_number }}
+        name: 诵读App v1.0.${{ github.run_number }}
+        body: |
+          ## 读经App APK下载
+          
+          - **心经诵读.apk** - 般若波罗蜜多心经
+          - **金刚经诵读.apk** - 金刚般若波罗蜜经
+          - **地藏经诵读.apk** - 地藏菩萨本愿经
+          
+          ### 功能特点
+          - 完整经文 + 拼音标注
+          - 佛教术语注解
+          - 语音朗读（支持调节语速）
+          - 诵读进度统计
+        files: |
+          心经诵读.apk
+          金刚经诵读.apk
+          地藏经诵读.apk
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

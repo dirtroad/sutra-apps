@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#667eea">
+<title>般若波罗蜜多心经（注音注解版）</title>
+<style>
+.weixin-tip{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);z-index:9999;color:white;text-align:center;padding:50px 20px}
+.weixin-tip.show{display:flex;flex-direction:column;justify-content:center;align-items:center}
+.weixin-tip h2{font-size:1.5em;margin-bottom:20px}
+.weixin-tip p{font-size:1em;opacity:0.9;margin-bottom:30px}
+.weixin-tip .arrow{font-size:3em;animation:bounce 1s infinite}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-20px)}}
+
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",sans-serif;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh;padding:10px}
+
+.container{max-width:900px;margin:0 auto;background:white;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,0.3);overflow:hidden}
+
+.header{background:linear-gradient(135deg,#f093fb 0%,#f5576c 100%);color:white;padding:20px 15px;text-align:center;position:sticky;top:0;z-index:100}
+.header h1{font-size:1.5em;margin-bottom:5px}
+.header p{opacity:0.95;font-size:0.85em}
+
+.progress-bar{background:rgba(255,255,255,0.3);border-radius:10px;height:6px;margin-top:10px;overflow:hidden}
+.progress-fill{background:white;height:100%;width:0%;transition:width 0.3s}
+
+.nav{display:flex;justify-content:space-around;padding:10px;background:#f8f9fa;border-bottom:1px solid #e9ecef;flex-wrap:wrap}
+.nav-btn{padding:8px 12px;border:none;background:#667eea;color:white;border-radius:8px;cursor:pointer;font-size:0.85em;transition:all 0.2s;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.nav-btn.active{background:#f5576c}
+.nav-btn:active{opacity:0.8;transform:scale(0.95)}
+
+.settings{display:flex;gap:10px;padding:10px 15px;background:#f0f0f0;flex-wrap:wrap;align-items:center}
+.toggle-group{display:flex;align-items:center;gap:5px;font-size:0.85em}
+.toggle-switch{position:relative;width:44px;height:24px}
+.toggle-switch input{opacity:0;width:0;height:0}
+.toggle-slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:#ccc;transition:.3s;border-radius:24px}
+.toggle-slider:before{position:absolute;content:"";height:18px;width:18px;left:3px;bottom:3px;background:white;transition:.3s;border-radius:50%}
+input:checked + .toggle-slider{background:#4ade80}
+input:checked + .toggle-slider:before{transform:translateX(20px)}
+
+.content{padding:15px;padding-bottom:100px}
+
+.jingwen-container{background:#faf8f5;padding:20px 15px;border-radius:15px}
+.jingwen-title{text-align:center;margin-bottom:20px;color:#667eea;font-size:1.4em;border-bottom:2px solid #667eea;padding-bottom:10px}
+
+.jingwen-text{font-size:1.2em;line-height:2.6;color:#333}
+ruby{ruby-align:center}
+ruby rt{font-size:0.45em;color:#666;font-family:"Noto Sans SC",sans-serif;opacity:1;transition:opacity 0.3s}
+.hide-pinyin ruby rt{opacity:0;height:0;overflow:hidden}
+.punct{margin:0 2px}
+.term{background:linear-gradient(transparent 60%,#fff3cd 60%);cursor:pointer;position:relative;transition:background 0.2s}
+.term:hover{background:linear-gradient(transparent 60%,#ffc107 60%)}
+
+.note-popup{position:fixed;bottom:0;left:0;right:0;background:white;border-radius:20px 20px 0 0;box-shadow:0 -10px 40px rgba(0,0,0,0.2);padding:20px;transform:translateY(100%);transition:transform 0.3s;z-index:1000;max-height:60vh;overflow-y:auto}
+.note-popup.show{transform:translateY(0)}
+.note-popup-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}
+.note-popup-title{font-size:1.3em;color:#667eea;font-weight:bold}
+.note-popup-close{width:32px;height:32px;border:none;background:#f0f0f0;border-radius:50%;cursor:pointer;font-size:1.2em}
+.note-popup p{margin:10px 0;color:#666}
+.note-popup .pinyin-text{font-size:1.1em;color:#f5576c;font-weight:bold}
+.note-popup .note-text{line-height:1.8;font-size:1em;color:#333}
+
+.control-bar{position:fixed;bottom:0;left:0;right:0;background:white;box-shadow:0 -4px 20px rgba(0,0,0,0.15);padding:12px 15px;z-index:100;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.control-btn{flex:1;min-width:60px;padding:12px 6px;border:none;border-radius:8px;cursor:pointer;font-size:0.85em;transition:all 0.2s;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.control-btn:active{transform:scale(0.95);box-shadow:0 2px 8px rgba(0,0,0,0.2)}
+.play-btn{background:linear-gradient(135deg,#4ade80 0%,#22c55e 100%);color:white}
+.pause-btn{background:linear-gradient(135deg,#fbbf24 0%,#f59e0b 100%);color:white}
+.stop-btn{background:linear-gradient(135deg,#ef4444 0%,#dc2626 100%);color:white}
+.speed-select{padding:8px 6px;border:2px solid #667eea;border-radius:8px;font-size:0.8em;background:white;max-width:70px}
+
+.stats{display:grid;grid-template-columns:1fr;gap:10px;margin-bottom:15px}
+.stat-card{background:linear-gradient(135deg,#22c55e 0%,#16a34a 100%);color:white;padding:15px;border-radius:10px;text-align:center}
+.stat-number{font-size:2em;font-weight:bold}
+.stat-label{font-size:0.85em;opacity:0.9}
+
+.notification{position:fixed;top:15px;right:15px;background:white;padding:12px 18px;border-radius:8px;box-shadow:0 10px 40px rgba(0,0,0,0.2);display:none;z-index:1001;border-left:5px solid #4ade80;max-width:300px}
+.notification.show{display:block;animation:slideIn 0.3s}
+@keyframes slideIn{from{transform:translateX(400px);opacity:0}to{transform:translateX(0);opacity:1}}
+
+.overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.3);display:none;z-index:999}
+.overlay.show{display:block}
+
+@media(max-width:600px){
+  .jingwen-text{font-size:1.1em;line-height:2.4}
+}
+</style>
+</head>
+<body>
+<div class="weixin-tip" id="weixinTip">
+<h2>🙏 欢迎诵读心经</h2>
+<p style="line-height:1.8">如果语音无法播放<br>请点击右上角「...」→「在浏览器中打开」</p>
+<div class="arrow">👆</div>
+<button onclick="document.getElementById('weixinTip').classList.remove('show')" style="margin-top:30px;padding:12px 30px;background:#667eea;color:white;border:none;border-radius:8px;font-size:1em">开始诵读</button>
+</div>
+
+<div class="container">
+<div class="header">
+<h1>📿 般若波罗蜜多心经</h1>
+<p>注音注解版 · 全文260字</p>
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+</div>
+
+<div class="nav">
+<button class="nav-btn active" data-tab="read">📖 诵读</button>
+<button class="nav-btn" data-tab="stats">📊 进度</button>
+<button class="nav-btn" data-tab="about">ℹ️ 说明</button>
+</div>
+
+<div class="settings">
+<div class="toggle-group">
+<label class="toggle-switch">
+<input type="checkbox" id="togglePinyin" checked>
+<span class="toggle-slider"></span>
+</label>
+<span>显示拼音</span>
+</div>
+<div class="toggle-group">
+<label class="toggle-switch">
+<input type="checkbox" id="toggleAnnotate" checked>
+<span class="toggle-slider"></span>
+</label>
+<span>注解高亮</span>
+</div>
+</div>
+
+<div class="content">
+<div id="readTab">
+<div class="control-bar">
+<button class="control-btn play-btn" id="playBtn">▶️ 播放</button>
+<button class="control-btn pause-btn" id="pauseBtn">⏸️ 暂停</button>
+<button class="control-btn stop-btn" id="stopBtn">⏹️ 停止</button>
+<select class="speed-select" id="speedSelect">
+<option value="0.7">0.7x 慢速</option>
+<option value="0.9">0.9x 稍慢</option>
+<option value="1" selected>1.0x 正常</option>
+<option value="1.2">1.2x 快速</option>
+<option value="1.5">1.5x 特快</option>
+</select>
+</div>
+
+<div class="stats">
+<div class="stat-card"><div class="stat-number" id="totalReadsMain">0</div><div class="stat-label">累计诵读遍数</div></div>
+</div>
+
+<div class="jingwen-container">
+<h3 class="jingwen-title">般若波罗蜜多心经</h3>
+<div id="jingwenContent"></div>
+</div>
+</div>
+
+<div id="statsTab" style="display:none">
+<h2 style="margin-bottom:15px;color:#333;font-size:1.2em;">诵读统计</h2>
+<div class="stats" style="grid-template-columns:repeat(2,1fr)">
+<div class="stat-card" style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%)"><div class="stat-number" id="totalDays">0</div><div class="stat-label">累计天数</div></div>
+<div class="stat-card" style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%)"><div class="stat-number" id="currentStreak">0</div><div class="stat-label">连续天数</div></div>
+</div>
+<div class="stats" style="margin-top:10px">
+<div class="stat-card"><div class="stat-number" id="totalReads">0</div><div class="stat-label">累计诵读遍数</div></div>
+</div>
+<div style="margin-top:20px;padding:15px;background:#f8f9fa;border-radius:10px">
+<h3 style="margin-bottom:10px;color:#667eea">💡 心经简介</h3>
+<p style="color:#666;font-size:0.9em;line-height:1.8">《般若波罗蜜多心经》是佛教经典中字数最少、含义最深、流传最广的经典。全经仅260字，却浓缩了般若类经典的精华，是修学佛法的重要入门经典。</p>
+</div>
+</div>
+
+<div id="aboutTab" style="display:none">
+<h2 style="margin-bottom:15px;color:#333;font-size:1.2em;">使用说明</h2>
+<div style="padding:15px;background:#f8f9fa;border-radius:10px;line-height:1.8">
+<p><strong>📖 功能特点</strong></p>
+<ul style="margin:10px 0 15px 20px;color:#666">
+<li>完整收录心经全文</li>
+<li>拼音标注：可开关显示，辅助正音</li>
+<li>佛教名词注解：点击黄色词汇查看解释</li>
+<li>语音朗读：支持调节语速</li>
+<li>进度记录：自动保存诵读遍数</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+
+<div class="notification" id="notification"></div>
+<div class="overlay" id="overlay" onclick="closeNotePopup()"></div>
+<div class="note-popup" id="notePopup">
+<div class="note-popup-header">
+<span class="note-popup-title" id="notePopupTitle">词汇</span>
+<button class="note-popup-close" onclick="closeNotePopup()">✕</button>
+</div>
+<p><span class="pinyin-text" id="notePopupPinyin"></span></p>
+<p class="note-text" id="notePopupNote"></p>
+</div>
+
+<script>
+// 心经全文
+const xinJingText = `观自在菩萨，行深般若波罗蜜多时，照见五蕴皆空，度一切苦厄。舍利子，色不异空，空不异色，色即是空，空即是色，受想行识，亦复如是。舍利子，是诸法空相，不生不灭，不垢不净，不增不减。是故空中无色，无受想行识，无眼耳鼻舌身意，无色声香味触法，无眼界，乃至无意识界。无无明，亦无无明尽，乃至无老死，亦无老死尽。无苦集灭道，无智亦无得。以无所得故，菩提萨埵，依般若波罗蜜多故，心无挂碍，无挂碍故，无有恐怖，远离颠倒梦想，究竟涅槃。三世诸佛，依般若波罗蜜多故，得阿耨多罗三藐三菩提。故知般若波罗蜜多，是大神咒，是大明咒，是无上咒，是无等等咒，能除一切苦，真实不虚。故说般若波罗蜜多咒，即说咒曰：揭谛揭谛，波罗揭谛，波罗僧揭谛，菩提萨婆诃。`;
+
+const ttsReplacements = {"般若":"波惹"};
+function processTextForTTS(text) {
+    let result = text;
+    for (const [original, replacement] of Object.entries(ttsReplacements)) {
+        result = result.split(original).join(replacement);
+    }
+    return result;
+}
+
+const annotations = {
+    "观自在菩萨": { pinyin: "guān zì zài pú sà", note: "观世音菩萨的另一名称，意为观照自心、自在无碍的菩萨" },
+    "般若波罗蜜多": { pinyin: "bō rě bō luó mì duō", note: "智慧到彼岸，通达真理的最高智慧" },
+    "五蕴": { pinyin: "wǔ yùn", note: "色、受、想、行、识，构成身心的五种要素" },
+    "色": { pinyin: "sè", note: "物质现象，有形状、颜色的存在" },
+    "空": { pinyin: "kōng", note: "缘起性空，一切法无自性" },
+    "舍利子": { pinyin: "shè lì zǐ", note: "舍利弗，佛陀十大弟子之一，智慧第一" },
+    "诸法空相": { pinyin: "zhū fǎ kōng xiàng", note: "一切法的实相是空" },
+    "眼耳鼻舌身意": { pinyin: "yǎn ěr bí shé shēn yì", note: "六根：眼根、耳根、鼻根、舌根、身根、意根" },
+    "色声香味触法": { pinyin: "sè shēng xiāng wèi chù fǎ", note: "六尘：色尘、声尘、香尘、味尘、触尘、法尘" },
+    "无明": { pinyin: "wú míng", note: "愚痴、无知，不明白真理" },
+    "苦集灭道": { pinyin: "kǔ jí miè dào", note: "四圣谛：苦谛、集谛、灭谛、道谛" },
+    "菩提萨埵": { pinyin: "pú tí sà duǒ", note: "菩萨，觉悟有情的圣者" },
+    "涅槃": { pinyin: "niè pán", note: "寂灭，烦恼断尽、超越生死的境界" },
+    "三世诸佛": { pinyin: "sān shì zhū fó", note: "过去、现在、未来一切佛" },
+    "阿耨多罗三藐三菩提": { pinyin: "ā nòu duō luó sān miǎo sān pú tí", note: "无上正等正觉，佛的圆满觉悟" }
+};
+
+const charPinyinFull = {
+    "观":"guān","自":"zì","在":"zài","菩":"pú","萨":"sà","行":"xíng","深":"shēn","般":"bō","若":"rě",
+    "波":"bō","罗":"luó","蜜":"mì","多":"duō","时":"shí","照":"zhào","见":"jiàn","五":"wǔ","蕴":"yùn",
+    "皆":"jiē","空":"kōng","度":"dù","一":"yī","切":"qiè","苦":"kǔ","厄":"è","舍":"shè","利":"lì",
+    "子":"zǐ","色":"sè","不":"bù","异":"yì","即":"jí","是":"shì","受":"shòu","想":"xiǎng","识":"shí",
+    "亦":"yì","复":"fù","如":"rú","诸":"zhū","法":"fǎ","相":"xiàng","生":"shēng","灭":"miè","垢":"gòu",
+    "净":"jìng","增":"zēng","减":"jiǎn","故":"gù","中":"zhōng","无":"wú","眼":"yǎn","耳":"ěr","鼻":"bí",
+    "舌":"shé","身":"shēn","意":"yì","声":"shēng","香":"xiāng","味":"wèi","触":"chù","界":"jiè","乃":"nǎi",
+    "至":"zhì","明":"míng","尽":"jìn","老":"lǎo","死":"sǐ","智":"zhì","得":"dé","以":"yǐ","所":"suǒ",
+    "提":"tí","埵":"duǒ","依":"yī","心":"xīn","挂":"guà","碍":"ài","有":"yǒu","恐":"kǒng","怖":"bù",
+    "远":"yuǎn","离":"lí","颠":"diān","倒":"dǎo","梦":"mèng","究":"jiū","竟":"jìng","涅":"niè",
+    "槃":"pán","三":"sān","世":"shì","佛":"fó","耨":"nòu","藐":"miǎo","大":"dà","神":"shén","咒":"zhòu",
+    "除":"chú","真":"zhēn","实":"shí","虚":"xū","说":"shuō","揭":"jiē","谛":"dì","僧":"sēng","婆":"pó","诃":"hē"
+};
+
+const wordPinyin = {
+    "观自在菩萨": "guān zì zài pú sà",
+    "般若波罗蜜多": "bō rě bō luó mì duō",
+    "五蕴": "wǔ yùn",
+    "舍利子": "shè lì zǐ",
+    "菩提萨埵": "pú tí sà duǒ",
+    "阿耨多罗三藐三菩提": "ā nòu duō luó sān miǎo sān pú tí",
+    "眼耳鼻舌身意": "yǎn ěr bí shé shēn yì",
+    "色声香味触法": "sè shēng xiāng wèi chù fǎ",
+    "三世诸佛": "sān shì zhū fó",
+    "无明": "wú míng",
+    "涅槃": "niè pán"
+};
+
+let isPlaying = false;
+let currentChunkIndex = 0;
+let textChunks = [];
+let stats = JSON.parse(localStorage.getItem('xinjing_stats') || '{"totalDays":0,"currentStreak":0,"lastVisit":null}');
+
+function init() {
+    if (isWechat()) {
+        document.getElementById('weixinTip').classList.add('show');
+    }
+    renderJingwen();
+    updateStats();
+    checkDailyVisit();
+    setupEventListeners();
+}
+
+function isWechat() {
+    return navigator.userAgent.toLowerCase().indexOf('micromessenger') !== -1;
+}
+
+function renderJingwen() {
+    const container = document.getElementById('jingwenContent');
+    const termPositions = [];
+    const sortedTerms = Object.keys(annotations).sort((a, b) => b.length - a.length);
+    for (const term of sortedTerms) {
+        let pos = 0;
+        let searchPos = 0;
+        while ((pos = xinJingText.indexOf(term, searchPos)) !== -1) {
+            termPositions.push({ term: term, start: pos, end: pos + term.length, info: annotations[term] });
+            searchPos = pos + 1;
+        }
+    }
+    termPositions.sort((a, b) => a.start - b.start);
+    
+    let result = '';
+    let i = 0;
+    while (i < xinJingText.length) {
+        if (xinJingText[i] === '\n') {
+            result += '<br>';
+            i++;
+            continue;
+        }
+        if (xinJingText[i] === ' ') { i++; continue; }
+        
+        if (/[，。！？；：、""''（）《》【】…—]/.test(xinJingText[i])) {
+            result += `<span class="punct" data-pos="${i}">${xinJingText[i]}</span>`;
+            i++;
+            continue;
+        }
+        
+        const termAtPos = termPositions.find(t => i >= t.start && i < t.end);
+        if (termAtPos && i === termAtPos.start) {
+            const term = termAtPos.term;
+            const pinyin = wordPinyin[term] || termAtPos.info.pinyin;
+            result += `<span class="term" data-term="${term}" data-pinyin="${termAtPos.info.pinyin}" data-note="${termAtPos.info.note}" data-pos="${i}">`;
+            result += `<ruby>${term}<rt>${pinyin}</rt></ruby></span>`;
+            i += term.length;
+        } else if (!termAtPos) {
+            const char = xinJingText[i];
+            if (/[\u4e00-\u9fa5]/.test(char)) {
+                const py = charPinyinFull[char];
+                result += py ? `<span data-pos="${i}"><ruby>${char}<rt>${py}</rt></ruby></span>` : `<span data-pos="${i}">${char}</span>`;
+            } else {
+                result += `<span data-pos="${i}">${char}</span>`;
+            }
+            i++;
+        } else { i++; }
+    }
+    
+    container.innerHTML = `<div class="jingwen-text" id="jingwenText"><p style="text-indent:2em">${result}</p></div>`;
+    prepareTextChunks(xinJingText);
+    setupClickToJump();
+}
+
+function setupClickToJump() {
+    document.getElementById('jingwenContent').addEventListener('click', function(e) {
+        let target = e.target;
+        let pos = null;
+        for (let i = 0; i < 5 && target; i++) {
+            if (target.getAttribute && target.getAttribute('data-pos')) {
+                pos = parseInt(target.getAttribute('data-pos'));
+                break;
+            }
+            target = target.parentElement;
+        }
+        if (pos === null || isNaN(pos)) return;
+        
+        const term = e.target.closest('.term');
+        if (term) {
+            showNotePopup(term.getAttribute('data-term'), term.getAttribute('data-pinyin'), term.getAttribute('data-note'));
+            return;
+        }
+        
+        speechSynthesis.cancel();
+        for (let j = 0; j < textChunks.length; j++) {
+            if (textChunks[j] && pos >= textChunks[j].start && pos < textChunks[j].end) {
+                currentChunkIndex = j;
+                break;
+            }
+        }
+        isPlaying = true;
+        showNotification('✅ 从此处开始播放');
+        playNextChunk();
+    });
+}
+
+function setupEventListeners() {
+    document.getElementById('playBtn').addEventListener('click', playAudio);
+    document.getElementById('pauseBtn').addEventListener('click', pauseAudio);
+    document.getElementById('stopBtn').addEventListener('click', stopAudio);
+    document.getElementById('speedSelect').addEventListener('change', () => showNotification('语速已调整'));
+    document.getElementById('togglePinyin').addEventListener('change', togglePinyinDisplay);
+    document.getElementById('toggleAnnotate').addEventListener('change', toggleAnnotationHighlight);
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.addEventListener('click', function() { showTab(this.getAttribute('data-tab')); });
+    });
+}
+
+function showNotePopup(term, pinyin, note) {
+    document.getElementById('notePopupTitle').textContent = term;
+    document.getElementById('notePopupPinyin').textContent = pinyin;
+    document.getElementById('notePopupNote').textContent = note;
+    document.getElementById('notePopup').classList.add('show');
+    document.getElementById('overlay').classList.add('show');
+}
+
+function closeNotePopup() {
+    document.getElementById('notePopup').classList.remove('show');
+    document.getElementById('overlay').classList.remove('show');
+}
+
+function togglePinyinDisplay() {
+    document.getElementById('jingwenContent').classList.toggle('hide-pinyin', !document.getElementById('togglePinyin').checked);
+}
+
+function toggleAnnotationHighlight() {
+    const show = document.getElementById('toggleAnnotate').checked;
+    document.querySelectorAll('.term').forEach(term => {
+        term.style.background = show ? 'linear-gradient(transparent 60%, #fff3cd 60%)' : 'none';
+    });
+}
+
+function prepareTextChunks(text) {
+    textChunks = [];
+    let i = 0, sentenceStart = 0;
+    while (i < text.length) {
+        let char = text[i++];
+        if (/[，。！？、；]/.test(char) || i >= text.length) {
+            textChunks.push({ text: text.substring(sentenceStart, i), start: sentenceStart, end: i });
+            sentenceStart = i;
+        }
+    }
+}
+
+function playAudio() {
+    if (isPlaying) return;
+    prepareTextChunks(xinJingText);
+    currentChunkIndex = 0;
+    isPlaying = true;
+    showNotification('开始播放');
+    playNextChunk();
+}
+
+function playNextChunk() {
+    if (!isPlaying) return;
+    if (currentChunkIndex >= textChunks.length) {
+        isPlaying = false;
+        completeReading();
+        showNotification('✅ 播放完成');
+        return;
+    }
+    
+    const chunk = textChunks[currentChunkIndex];
+    const speed = parseFloat(document.getElementById('speedSelect').value);
+    const textToRead = chunk.text.replace(/[，。！？；：、""''（）《》【】…—\s]/g, '');
+    
+    if (!textToRead) { currentChunkIndex++; playNextChunk(); return; }
+    
+    const utterance = new SpeechSynthesisUtterance(processTextForTTS(textToRead));
+    utterance.lang = 'zh-CN';
+    utterance.rate = speed;
+    utterance.onend = () => { if (isPlaying) { currentChunkIndex++; playNextChunk(); } };
+    utterance.onerror = () => { currentChunkIndex++; playNextChunk(); };
+    speechSynthesis.speak(utterance);
+    
+    const progress = ((currentChunkIndex + 1) / textChunks.length) * 100;
+    document.getElementById('progressFill').style.width = progress + '%';
+    updateReadDisplay(chunk.end);
+}
+
+function updateReadDisplay(readEnd) {
+    document.querySelectorAll('#jingwenText [data-pos]').forEach(span => {
+        const pos = parseInt(span.getAttribute('data-pos'));
+        span.style.color = pos < readEnd ? '#15803d' : '';
+    });
+}
+
+function pauseAudio() {
+    if (speechSynthesis.speaking && !speechSynthesis.paused) {
+        speechSynthesis.pause();
+        isPlaying = false;
+        showNotification('⏸️ 已暂停（点击播放继续）');
+    }
+}
+
+function stopAudio() {
+    speechSynthesis.cancel();
+    isPlaying = false;
+    currentChunkIndex = 0;
+    document.getElementById('progressFill').style.width = '0%';
+    document.querySelectorAll('#jingwenText [data-pos]').forEach(span => { span.style.color = ''; });
+}
+
+function completeReading() {
+    const totalReads = parseInt(localStorage.getItem('xinjing_total_reads') || '0');
+    localStorage.setItem('xinjing_total_reads', (totalReads + 1).toString());
+    updateStats();
+    showNotification(`🎉 功德圆满！心经已诵读 ${totalReads + 1} 遍！`);
+}
+
+function updateStats() {
+    const totalReads = parseInt(localStorage.getItem('xinjing_total_reads') || '0');
+    document.getElementById('totalReads').textContent = totalReads;
+    document.getElementById('totalReadsMain').textContent = totalReads;
+    document.getElementById('totalDays').textContent = stats.totalDays;
+    document.getElementById('currentStreak').textContent = stats.currentStreak;
+}
+
+function checkDailyVisit() {
+    const today = new Date().toDateString();
+    if (stats.lastVisit !== today) {
+        if (stats.lastVisit) {
+            const diffDays = Math.floor((new Date(today) - new Date(stats.lastVisit)) / (1000 * 60 * 60 * 24));
+            if (diffDays === 1) stats.currentStreak++;
+            else if (diffDays > 1) stats.currentStreak = 1;
+            stats.totalDays++;
+        } else {
+            stats.totalDays = 1;
+            stats.currentStreak = 1;
+        }
+        stats.lastVisit = today;
+        localStorage.setItem('xinjing_stats', JSON.stringify(stats));
+    }
+}
+
+function showTab(tabName) {
+    document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    document.getElementById('readTab').style.display = tabName === 'read' ? 'block' : 'none';
+    document.getElementById('statsTab').style.display = tabName === 'stats' ? 'block' : 'none';
+    document.getElementById('aboutTab').style.display = tabName === 'about' ? 'block' : 'none';
+}
+
+function showNotification(message) {
+    const notification = document.getElementById('notification');
+    notification.textContent = message;
+    notification.classList.add('show');
+    setTimeout(() => notification.classList.remove('show'), 3000);
+}
+
+init();
+</script>
+</body>
+</html>
