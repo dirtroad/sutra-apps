@@ -2,26 +2,32 @@ package com.sutra.app
 
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
+import android.speech.tts.UtteranceProgressListener
+import android.util.Log
 import android.webkit.JavascriptInterface
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatActivity
+import org.json.JSONObject
 import java.util.*
 
-class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
+class MainActivity : AppCompatActivity() {
     private lateinit var webView: WebView
     private var tts: TextToSpeech? = null
     private var ttsReady = false
-    private var currentSpeed = 1.0f
+    private val TAG = "SutraApp"
+    private var currentText = ""
+    private var currentIndex = 0
+    private var textChunks = mutableListOf<String>()
+    private var isPlaying = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // 初始化TTS
-        tts = TextToSpeech(this, this)
-
+        initTTS()
+        
         webView = findViewById(R.id.webview)
         setupWebView()
         
@@ -35,16 +41,51 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         webView.loadUrl("file:///android_asset/$assetPath/index.html")
     }
 
-    override fun onInit(status: Int) {
-        if (status == TextToSpeech.SUCCESS) {
-            tts?.let {
-                val result = it.setLanguage(Locale.CHINESE)
+    private fun initTTS() {
+        tts = TextToSpeech(this) { status ->
+            if (status == TextToSpeech.SUCCESS) {
+                val result = tts?.setLanguage(Locale.CHINESE)
                 if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                    it.setLanguage(Locale("zh", "CN"))
+                    tts?.setLanguage(Locale("zh", "CN"))
                 }
+                tts?.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
+                    override fun onStart(utteranceId: String?) {
+                        Log.d(TAG, "TTS started: $utteranceId")
+                    }
+                    override fun onDone(utteranceId: String?) {
+                        Log.d(TAG, "TTS done: $utteranceId")
+                        playNext()
+                    }
+                    override fun onError(utteranceId: String?) {
+                        Log.e(TAG, "TTS error: $utteranceId")
+                        playNext()
+                    }
+                })
                 ttsReady = true
+                runOnUiThread {
+                    webView.evaluateJavascript("window.ttsReady = true;", null)
+                }
             }
         }
+    }
+
+    private fun playNext() {
+        if (!isPlaying || currentIndex >= textChunks.size) {
+            isPlaying = false
+            runOnUiThread {
+                webView.evaluateJavascript("if(window.onPlaybackEnd) window.onPlaybackEnd();", null)
+            }
+            return
+        }
+        
+        val text = textChunks[currentIndex]
+        currentIndex++
+        
+        runOnUiThread {
+            webView.evaluateJavascript("if(window.onProgress) window.onProgress($currentIndex, ${textChunks.size});", null)
+        }
+        
+        tts?.speak(text, TextToSpeech.QUEUE_FLUSH, null, "chunk_$currentIndex")
     }
 
     private fun setupWebView() {
@@ -55,86 +96,56 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
             allowFileAccess = true
             allowContentAccess = true
             mediaPlaybackRequiresUserGesture = false
-            mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
             cacheMode = WebSettings.LOAD_DEFAULT
             setSupportZoom(false)
             builtInZoomControls = false
-            displayZoomControls = false
-            useWideViewPort = true
-            loadWithOverviewMode = true
-            blockNetworkImage = false
-            blockNetworkLoads = false
         }
         
-        // 添加JS接口
-        webView.addJavascriptInterface(WebViewInterface(), "AndroidBridge")
+        webView.addJavascriptInterface(WebViewInterface(), "AndroidTTS")
         
         webView.setWebViewClient(object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
-                url?.let { view?.loadUrl(it) }
-                return true
-            }
-            override fun onPageFinished(view: WebView?, url: String?) {
-                // 注入原生TTS支持
-                view?.evaluateJavascript("""
-                    (function() {
-                        if (window.speechSynthesis) {
-                            window.speechSynthesis.speak = function(utterance) {
-                                if (utterance && utterance.text) {
-                                    AndroidBridge.speak(utterance.text, utterance.rate || 1.0);
-                                    if (utterance.onend) {
-                                        setTimeout(utterance.onend, utterance.text.length * 200);
-                                    }
-                                }
-                            };
-                            window.speechSynthesis.cancel = function() {
-                                AndroidBridge.stop();
-                            };
-                            window.speechSynthesis.pause = function() {
-                                AndroidBridge.stop();
-                            };
-                        }
-                    })();
-                """, null)
-            }
-        })
-        
-        webView.setWebChromeClient(object : android.webkit.WebChromeClient() {
-            override fun onPermissionRequest(request: android.webkit.PermissionRequest?) {
-                request?.grant(request.resources)
+                return false
             }
         })
     }
 
     inner class WebViewInterface {
         @JavascriptInterface
-        fun speak(text: String, rate: Double) {
-            currentSpeed = rate.toFloat()
-            tts?.let {
-                if (ttsReady) {
-                    it.stop()
-                    it.setSpeechRate(currentSpeed)
-                    it.speak(text, TextToSpeech.QUEUE_FLUSH, null, "tts1")
+        fun isReady(): Boolean = ttsReady
+
+        @JavascriptInterface
+        fun play(jsonTexts: String, speed: Float) {
+            if (!ttsReady) {
+                Log.e(TAG, "TTS not ready")
+                return
+            }
+            
+            try {
+                textChunks.clear()
+                val arr = org.json.JSONArray(jsonTexts)
+                for (i in 0 until arr.length()) {
+                    textChunks.add(arr.getString(i))
                 }
+                currentIndex = 0
+                isPlaying = true
+                tts?.setSpeechRate(speed)
+                playNext()
+            } catch (e: Exception) {
+                Log.e(TAG, "Parse error: ${e.message}")
             }
         }
 
         @JavascriptInterface
         fun stop() {
+            isPlaying = false
             tts?.stop()
         }
 
         @JavascriptInterface
         fun pause() {
+            isPlaying = false
             tts?.stop()
-        }
-    }
-
-    override fun onBackPressed() {
-        if (webView.canGoBack()) {
-            webView.goBack()
-        } else {
-            super.onBackPressed()
         }
     }
 
